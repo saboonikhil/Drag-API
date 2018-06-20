@@ -1,0 +1,67 @@
+Arguments: 
+  /usr/bin/nodejs /usr/share/yarn/bin/yarn.js init
+
+PATH: 
+  /home/rishab/anaconda3/bin:/home/rishab/bin:/home/rishab/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.7.0
+
+Node version: 
+  4.2.6
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (/usr/share/yarn/lib/cli.js:131036:13)
+      at emitNone (events.js:67:13)
+      at Interface.emit (events.js:166:7)
+      at Interface._ttyWrite (readline.js:690:16)
+      at ReadStream.onkeypress (readline.js:105:10)
+      at emitTwo (events.js:87:13)
+      at ReadStream.emit (events.js:172:7)
+      at emitKeys (readline.js:1250:14)
+      at next (native)
+      at ReadStream.onData (readline.js:918:36)
+
+npm manifest: 
+  {
+    "name": "ran_api_v01",
+    "version": "1.0.0",
+    "description": "ran api package",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/imRishN/RAN_API_v01.git"
+    },
+    "author": "Rishab Nahata <rishabnahata07@gmail.com>",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/imRishN/RAN_API_v01/issues"
+    },
+    "homepage": "https://github.com/imRishN/RAN_API_v01#readme",
+    "dependencies": {
+      "express": "^4.16.3",
+      "mongodb": "^2.2.35"
+    },
+    "devDependencies": {
+      "eslint": "^4.19.1",
+      "eslint-config-airbnb": "^16.1.0",
+      "eslint-config-airbnb-base": "^12.1.0",
+      "eslint-plugin-import": "^2.12.0",
+      "eslint-plugin-jsx-a11y": "^6.0.3",
+      "eslint-plugin-react": "^7.9.1",
+      "nodemon": "^1.17.5"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
