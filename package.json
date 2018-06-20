@@ -1,0 +1,19 @@
+{
+  "name": "ran_api_v01",
+  "version": "1.0.0",
+  "description": "ran api package",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imRishN/RAN_API_v01.git"
+  },
+  "author": "Rishab Nahata <rishabnahata07@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/imRishN/RAN_API_v01/issues"
+  },
+  "homepage": "https://github.com/imRishN/RAN_API_v01#readme"
+}
