@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/imRishN/RAN_API_v01/issues"
   },
-  "homepage": "https://github.com/imRishN/RAN_API_v01#readme"
+  "homepage": "https://github.com/imRishN/RAN_API_v01#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
