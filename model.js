@@ -12,7 +12,7 @@ const UserSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now }
 });
 
-UserSchema.method('update', (updates, callback) => {
+UserSchema.method('update', function(updates, callback) {
 	Object.assign(this, updates, { updatedAt: new Date() });
 	this.parent().save(callback);
 });

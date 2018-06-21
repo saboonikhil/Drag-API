@@ -1,39 +1,54 @@
 const express = require('express');
 const router = express.Router();
+const User = require('./model').User;
 
-router.get('/users', (req, res) =>{
-	res.json({
-		response: 'GET request for all users'
+router.param('uID', function(req, res, next, id) {
+	User.find(id, function(err, user){
+		if(err) return next(err);
+		if(!user){
+			err = new Error('Failed to load user');
+			err.status = 404;
+			return next(err);
+		}
+		req.user = user;
+		return next();
+	});
+});//check this
+
+router.get('/users', function(req, res, next) {
+	User.find({}).sort({createdAt: -1}).exec(function(err,users){
+		if(err) return next(err);
+		res.json(users);
 	});
 });
 
-router.post('/users', (req, res) => {
-	res.json({
-		response: 'POST request for creating users',
-		body: req.body
+router.post('/users', function(req, res) {
+	const user = new User(req.body);
+	user.save(function(err,user){
+		if(err) return next(err);
+		res.status(201);
+		res.json(user);
 	});
 });
 
-router.get('/user/:uID', (req, res) => {
-	res.json({
-		response: 'GET request for looking at a specific user with id: ${req.params.uID}' 			
-	});
+router.get('/user/:uID', function(req, res) {
+	res.json(req.user);
 });
 
-router.put('/user/:uID', (req,res) => {
-	res.json({
-		response: 'PUT request for updating user',
-		user: req.params.uID,
-		body: req.body
-	})
-})
+router.put('/user/:uID', function(req, res, next) {
+	req.user.update(req.body, function(err,result) {
+		if(err) return next(err);
+		res.json(result);//check this
+	});
+});
 
 router.delete('/user/:uID', (req,res) => {
-	res.json({
-		response: 'DELETE request for DELETING the user',
-		user: req.params.uID,
-		body: req.body
-	});
+	req.user.remove(function(err){
+		req.user.save(function(err, user){
+			if(err) return next(err);
+			res.json(user);
+		});
+	})
 });
 
 module.exports = router;
