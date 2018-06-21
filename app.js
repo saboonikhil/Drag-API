@@ -1,17 +1,14 @@
-var express = require('express')
-var app = express()
+const express = require('express');
+const jsonParser = require('body-parser').json;
+const routes = require('./routes');
 
-var requestTime = function (req, res, next) {
-  req.requestTime = Date.now()
-  next()
-}
+const app = express();
 
-app.use(requestTime)
+app.use(jsonParser());
+app.use('/users',routes);
 
-app.get('/', function (req, res) {
-  var responseText = 'Hello World!<br>'
-  responseText += '<small>Requested at: ' + req.requestTime + '</small>'
-  res.send(responseText)
-})
+const port = process.env.port || 8080;
 
-app.listen(8080)
+app.listen(port, () => {
+  console.log(`Web server listening on: ${port}`);
+});
