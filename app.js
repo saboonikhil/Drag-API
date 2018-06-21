@@ -1,8 +1,10 @@
 const express = require('express');
+const app = express();
 const jsonParser = require('body-parser').json;
 const routes = require('./routes');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+
 
 mongoose.connect('mongodb://localhost:27017/RAN_USERS');
 const db = mongoose.connection;
@@ -14,9 +16,7 @@ db.once('open',() => {
 	console.log('DB connected successfully!');
 });
 
-const app = express();
-
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
@@ -28,9 +28,10 @@ app.use(function(req, res, next) {
   }
 });
 
+
 app.use(logger('dev'));
 app.use(jsonParser());
-app.use('/users',routes);//check this to mount the router on the app
+app.use('/users',routes);
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');
