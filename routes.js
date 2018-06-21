@@ -43,12 +43,10 @@ router.put('/user/:uID', function(req, res, next) {
 });
 
 router.delete('/user/:uID', (req,res) => {
-	req.user.remove(function(err){
-		req.user.save(function(err, user){
+	req.user.remove(function(err){		
 			if(err) return next(err);
-			res.json(user);
-		});
-	})
+			res.json(user);		
+	});
 });
 
 module.exports = router;
