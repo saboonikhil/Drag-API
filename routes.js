@@ -13,7 +13,7 @@ router.param('uID', function(req, res, next, id) {
 		req.user = user;
 		return next();
 	});
-});//check this
+});
 
 router.get('/users', function(req, res, next) {
 	User.find({}).sort({createdAt: -1}).exec(function(err,users){

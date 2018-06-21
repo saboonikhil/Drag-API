@@ -22,16 +22,17 @@ app.use((req, res, next) => {
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept'
   );
-  if (req.method === 'Options') {
+  if (req.method === 'OPTIONS') {
     res.header('Access-Control-Allow-Methods', 'PUT, POST, DELETE');
     return res.status(200).json({});
   }
+  next();
 });
 
 
 app.use(logger('dev'));
 app.use(jsonParser());
-app.use('/users',routes);
+app.use(routes);
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');
