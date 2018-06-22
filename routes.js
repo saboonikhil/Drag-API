@@ -36,7 +36,7 @@ router.get('/users/:uID', function(req, res) {
 });
 
 router.put('/users/:uID', function(req, res, next) {
-	User.updateOne(req.body, function(err, result) {
+	User.findByIdAndUpdate(req.params.uID, req.body, function(err, result) {
 		if(err) return next(err);
 		res.json(result);
 	});
