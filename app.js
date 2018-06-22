@@ -32,7 +32,7 @@ app.use((req, res, next) => {
 
 app.use(logger('dev'));
 app.use(jsonParser());
-app.use('/users', routes);
+app.use('/', routes);
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');

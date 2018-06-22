@@ -15,14 +15,14 @@ router.param('uID', function(req, res, next, id) {
 	});
 });
 
-router.get('/', function(req, res, next) {
+router.get('/users', function(req, res, next) {
 	User.find({}).sort({createdAt: -1}).exec(function(err,users){
 		if(err) return next(err);
 		res.json(users);
 	});
 });
 
-router.post('/', function(req, res) {
+router.post('/users', function(req, res) {
 	const user = new User(req.body);
 	user.save(function(err,user){
 		if(err) return next(err);
@@ -31,21 +31,21 @@ router.post('/', function(req, res) {
 	});
 });
 
-router.get('/:uID', function(req, res) {
+router.get('/users/:uID', function(req, res) {
 	res.json(req.user);
 });
 
-router.put('/:uID', function(req, res, next) {
-	req.user.update(req.body, function(err,result) {
+router.put('/users/:uID', function(req, res, next) {
+	req.user.update(req.body, function(err, result) {
 		if(err) return next(err);
 		res.json(result);
 	});
 });
 
-router.delete('/:uID', (req,res) => {
-	req.user.remove(function(err){		
+router.delete('/users/:uID', function(req,res) {
+	req.user.remove(function(err,user){		
 			if(err) return next(err);
-			res.json(user);		
+			res.json(user);							
 	});
 });
 
