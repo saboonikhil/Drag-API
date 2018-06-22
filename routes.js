@@ -36,7 +36,7 @@ router.get('/users/:uID', function(req, res) {
 });
 
 router.put('/users/:uID', function(req, res, next) {
-	req.user.update(req.body, function(err, result) {
+	User.updateOne(req.body, function(err, result) {
 		if(err) return next(err);
 		res.json(result);
 	});
