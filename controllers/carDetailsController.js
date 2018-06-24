@@ -1,4 +1,4 @@
-const CarDetail = require('/models/carDetail');
+const CarDetail = require('../models/carDetail');
 
 exports.carDetail_list = function(req, res) {
     res.send('NOT IMPLEMENTED: Car Detail list');
