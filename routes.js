@@ -3,7 +3,6 @@ const router = express.Router();
 const car_detail_controller = require('./controllers/carDetailController');
 const user_controller = require('./controllers/userController');
 
-//End Points for Users
 router.param('uID', function(req, res, next, id) {
 	User.findById(id, function(err,doc){
 		if(err) return next(err);
@@ -27,7 +26,6 @@ router.get('/users/:uID', user_controller.user_detail);
 router.put('/users/:uID', user_controller.user_update);
 
 router.delete('/users/:uID', user_controller.user_delete);
-
 
 //Car Detail Routes
 router.get('/carDetails', car_detail_controller.carDetail_list);
