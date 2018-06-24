@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const CarDetailsSchema = new Schema({
+const CarDetailSchema = new Schema({
 	isShared: {type: Boolean, default: false},
 	isBooked: {type: Boolean, default: false},
 	carName: {type: String, require: true},
@@ -21,12 +21,16 @@ const CarDetailsSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now }
 });
 
-CarDetailsSchema.method('update', function(update, callback){
+CarDetailSchema.virtual('url').get(function(){
+	return '/carDetail/' + this._id;
+})
+
+CarDetailSchema.method('update', function(update, callback){
 	Object.assign(this, updates, {updatedAt: new Date() });
 	this.save(callback);
 });
 
-const CarDetail = mongoose.model('CarDetail', CarDetailsSchema);
+const CarDetail = mongoose.model('CarDetail', CarDetailSchema);
 
 module.exports = {
 	CarDetail: CarDetail
