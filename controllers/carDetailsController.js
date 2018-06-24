@@ -1,7 +1,10 @@
-const CarDetail = require('../models/carDetail');
+const CarDetail = require('../models/carDetail').CarDetail;
 
 exports.carDetail_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: Car Detail list');
+    CarDetail.find({}).sort({createdAt: -1}).exec(function(err,carDetails){
+		if(err) return next(err);
+		res.json(carDetails);
+	});
 };
 
 exports.carDetail_detail = function(req, res) {

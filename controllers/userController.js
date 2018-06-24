@@ -1,33 +1,35 @@
-const User = require('/models/user');
+const User = require('../models/user').User;
 
 exports.user_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: User list');
+    User.find({}).sort({createdAt: -1}).exec(function(err,users){
+		if(err) return next(err);
+		res.json(users);
+	});
 };
+
+exports.create_user = function(req,res) {
+	const user = new User(req.body);
+	user.save(function(err,user){
+		if(err) return next(err);
+		res.status(201);
+		res.json(user);
+	});
+}
 
 exports.user_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: User detail: ' + req.params.id);
+    res.json(req.user);
 };
 
-exports.user_create_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: User create GET');
+exports.user_update = function(req, res) {
+    req.user.update(req.body, function(err, result) {
+		if(err) return next(err);
+		res.json(result);
+	});
 };
 
-exports.user_create_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: User create POST');
-};
-
-exports.user_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: User delete GET');
-};
-
-exports.user_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: User delete POST');
-};
-
-exports.user_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: User update GET');
-};
-
-exports.user_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: User update POST');
+exports.user_delete = function(req, res) {
+    req.user.remove(function(err,user){		
+			if(err) return next(err);
+			res.json(user);							
+	});
 };
