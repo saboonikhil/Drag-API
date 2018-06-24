@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const car_details_controller = require('./controllers/carDetailsController');
+const car_detail_controller = require('./controllers/carDetailController');
 const user_controller = require('./controllers/userController');
 
 //End Points for Users
@@ -29,25 +29,16 @@ router.put('/users/:uID', user_controller.user_update);
 router.delete('/users/:uID', user_controller.user_delete);
 
 
-router.get('/carDetails/create', car_details_controller.carDetail_create_get);
+//Car Detail Routes
+router.get('/carDetails', car_detail_controller.carDetail_list);
 
+router.post('/carDetails', car_detail_controller.add_car_detail);
 
-router.post('/carDetails/create', car_details_controller.carDetail_create_post);
+router.get('/carDetails/:cID', car_detail_controller.car_detail);
 
+router.put('/carDetails/:cID', car_detail_controller.car_update);
 
-router.get('/carDetails/:id/delete', car_details_controller.carDetail_delete_get);
-
-router.post('/carDetails/:id/delete', car_details_controller.carDetail_delete_post);
-
-
-router.get('/carDetails/:id/update', car_details_controller.carDetail_update_get);
-
-router.post('/carDetails/:id/update', car_details_controller.carDetail_update_post);
-
-router.get('/carDetails/:id', car_details_controller.carDetail_detail);
-
-
-router.get('/carDetails', car_details_controller.carDetail_list);
+router.delete('/carDetails/:cID', car_detail_controller.car_delete);
 
 module.exports = router;
 
