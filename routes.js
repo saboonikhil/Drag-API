@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const User = require('./model').User;
+const User = require('./models/user').User;
+const carDetail = require('./models/carDetail').CarDetail;
 
+
+//End Points for Users
 router.param('uID', function(req, res, next, id) {
 	User.findById(id, function(err,doc){
 		if(err) return next(err);
@@ -46,6 +49,14 @@ router.delete('/users/:uID', function(req,res) {
 	req.user.remove(function(err,user){		
 			if(err) return next(err);
 			res.json(user);							
+	});
+});
+
+//End Points for CarDetail
+router.get('/carDetails', function(req, res, next) {
+	CarDetail.find({}).sort({createdAt: -1}).exec(function(err, carDetails){
+		if(err) return next(err);
+		res.json(carDetails);
 	});
 });
 
