@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
 	userName: {type: String, require: true},
-	email: {type: String, require: true, unique: true, lowerCase: true, trim: true},
+	email: {type: String, require: true, unique: true},
 	contact: {type: String, require: true, unique: true},
 	alternateContact: {type: String, default: 'Not Available'},
 	tripsCompleted: {type: Number, default: 0},
