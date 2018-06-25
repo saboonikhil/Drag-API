@@ -3,19 +3,6 @@ const router = express.Router();
 const car_detail_controller = require('./controllers/carDetailController');
 const user_controller = require('./controllers/userController');
 
-router.param('uID', function(req, res, next, id) {
-	User.findById(id, function(err,doc){
-		if(err) return next(err);
-		if(!doc){
-			err = new Error('Failed to load user');
-			err.status = 404;
-			return next(err);
-		}
-		req.user = doc;
-		return next();
-	});
-});
-
 //User Routes
 router.get('/users', user_controller.user_list);
 
