@@ -14,7 +14,6 @@ const CarDetailSchema = new Schema({
 	driverContact: {type: String, default: 'Not Available'},
 	driverID: {type: String, default: 'Not Available'},
 	carNumber: {type: String, default: 'Not Available'},
-	orgName: {type: String, default: 'Not Available'},
 	collegeName: {type: String, default: 'Not Available'},
 	fare: {type: Number, require: true},
 	createdAt: { type: Date, default: Date.now },
