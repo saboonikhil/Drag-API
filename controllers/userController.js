@@ -1,19 +1,6 @@
 const User = require('../models/user').User;
 const async = require('async');
 
-/*router.param('uID', function(req, res, next, id) {
-	User.findById(id, function(err,doc){
-		if(err) return next(err);
-		if(!doc){
-			err = new Error('Failed to load user');
-			err.status = 404;
-			return next(err);
-		}
-		req.user = doc;
-		return next();
-	});
-});*/
-
 exports.user_list = function(req, res, next) {
 	User.find({}).sort({createdAt: -1}).exec(function(err,users){
 		if(err) return next(err);
