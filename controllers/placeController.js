@@ -18,27 +18,36 @@ exports.add_place = function(req, res, next) {
 };
 
 exports.place_detail = function(req, res, next) {
-    Place.findById(req.params.id, function(err, result){
-    	if(err) return next(err);
+	Place.findById(req.params.pID, function(err, result){
+		if(err) return next(err);
 		if(!result){
 			err = new Error('Failed to load place');
 			err.status = 404;
 			return next(err);
 		}
 		req.place = result;
-		res.json(req.params.id);
-    });
+		res.json(req.place);
+	});
 };
 
 exports.place_update = function(req, res, next) {
-	req.place.update(req.body, function(err, result) {
+	Place.findById(req.params.pID, function(err, result){
 		if(err) return next(err);
-		res.json(result);
+		if(!result){
+			err = new Error('Failed to load place');
+			err.status = 404;
+			return next(err);
+		}
+		req.place = result;   
+		req.place.update(req.body, function(err, result) {
+			if(err) return next(err);
+			res.json(result);
+		});
 	});
 };
 
 exports.place_delete = function(req, res, next) {
-	req.place.remove(function(err,place){		
+	Place.remove({ _id: req.params.pID}, function(err,place){		
 		if(err) return next(err);
 		res.json(place);							
 	});

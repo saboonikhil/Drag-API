@@ -13,7 +13,7 @@ PlaceSchema.virtual('url').get(function () {
     return '/place/' + this._id;
 })
 
-PlaceSchema.method('update', function (update, callback) {
+PlaceSchema.method('update', function (updates, callback) {
     Object.assign(this, updates, { updatedAt: new Date() });
     this.save(callback);
 });
