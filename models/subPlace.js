@@ -11,7 +11,7 @@ subPlaceSchema.virtual('url').get(function () {
     return '/subPlace/' + this._id;
 })
 
-subPlaceSchema.method('update', function (update, callback) {
+subPlaceSchema.method('update', function (updates, callback) {
     Object.assign(this, updates, { updatedAt: new Date() });
     this.save(callback);
 });

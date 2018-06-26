@@ -18,27 +18,36 @@ exports.add_sub_place = function(req, res, next) {
 };
 
 exports.sub_place_detail = function(req, res, next) {
-    SubPlace.findById(req.params.id, function(err, result){
-    	if(err) return next(err);
+	SubPlace.findById(req.params.sID, function(err, result){
+		if(err) return next(err);
 		if(!result){
 			err = new Error('Failed to load sub place');
 			err.status = 404;
 			return next(err);
 		}
 		req.subPlace = result;
-		res.json(req.params.id);
-    });
+		res.json(req.subPlace);
+	});
 };
 
 exports.sub_place_update = function(req, res, next) {
-	req.subPlace.update(req.body, function(err, result) {
+	SubPlace.findById(req.params.sID, function(err, result){
 		if(err) return next(err);
-		res.json(result);
+		if(!result){
+			err = new Error('Failed to load sub place');
+			err.status = 404;
+			return next(err);
+		}
+		req.subPlace = result;		
+		req.subPlace.update(req.body, function(err, result) {
+			if(err) return next(err);
+			res.json(result);
+		});
 	});
 };
 
 exports.sub_place_delete = function(req, res, next) {
-	req.subPlace.remove(function(err,subPlace){		
+	SubPlace.remove({_id: req.params.sID}, function(err,subPlace){		
 		if(err) return next(err);
 		res.json(subPlace);							
 	});
