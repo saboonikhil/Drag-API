@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const user_controller = require('./controllers/userController');
-const car_detail_controller = require('./controllers/carDetailController');
+const cab_controller = require('./controllers/cabController');
 const driver_controller = require('./controllers/driverController');
 const place_controller = require('./controllers/placeController');
 const sub_place_controller = require('./controllers/subPlaceController');
@@ -14,11 +14,11 @@ router.put('/users/:uID', user_controller.user_update);
 router.delete('/users/:uID', user_controller.user_delete);
 
 //Car Detail Routes
-router.get('/carDetails', car_detail_controller.carDetail_list);
-router.post('/carDetails', car_detail_controller.add_car_detail);
-router.get('/carDetails/:cID', car_detail_controller.car_detail);
-router.put('/carDetails/:cID', car_detail_controller.car_update);
-router.delete('/carDetails/:cID', car_detail_controller.car_delete);
+router.get('/cabs', cab_controller.cab_list);
+router.post('/cabs', cab_controller.add_cab);
+router.get('/cabs/:cID', cab_controller.cab_detail);
+router.put('/cabs/:cID', cab_controller.cab_update);
+router.delete('/cabs/:cID', cab_controller.cab_delete);
 
 //Driver Routes
 router.get('/drivers', driver_controller.list_driver);

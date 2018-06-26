@@ -10,7 +10,7 @@ const UserSchema = new Schema({
 	password: {type: String, require: true},
 	createdAt: {type: Date, default: Date.now },
 	updatedAt: {type: Date, default: Date.now },
-	carBooked: {type: Schema.ObjectId, ref: 'CarDetail'}
+	carBooked: {type: Schema.ObjectId, ref: 'Cab'}
 });
 
 UserSchema.virtual('url').get(function(){
