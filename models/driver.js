@@ -15,7 +15,7 @@ DriverSchema.virtual('url').get(function () {
     return '/driver/' + this._id;
 })
 
-DriverSchema.method('update', function (update, callback) {
+DriverSchema.method('update', function (updates, callback) {
     Object.assign(this, updates, { updatedAt: new Date() });
     this.save(callback);
 });
