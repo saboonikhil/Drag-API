@@ -31,27 +31,36 @@ exports.create_user = function(req, res, next) {
 };
 
 exports.user_detail = function(req, res, next) {
-    User.findById(req.params.id, function(err, result){
-    	if(err) return next(err);
+	User.findById(req.params.uID, function(err, result){
+		if(err) return next(err);
 		if(!result){
 			err = new Error('Failed to load user');
 			err.status = 404;
 			return next(err);
 		}
 		req.user = result;
-		res.json(req.params.id);
-    });
+		res.json(req.user);
+	});
 };
 
 exports.user_update = function(req, res, next) {
-	req.user.update(req.body, function(err, result) {
+	User.findById(req.params.uID, function(err, result){
 		if(err) return next(err);
-		res.json(result);
+		if(!result){
+			err = new Error('Failed to load user');
+			err.status = 404;
+			return next(err);
+		}
+		req.user = result;
+		req.user.update(req.body, function(err, result) {
+			if(err) return next(err);
+			res.json(result);
+		});
 	});
 };
 
 exports.user_delete = function(req, res, next) {
-	req.user.remove(function(err,user){		
+	User.remove({ _id: req.params.uID}, function(err,user){		
 		if(err) return next(err);
 		res.json(user);							
 	});
