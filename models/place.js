@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PlaceSchema = new Schema({
-    collegeName: { type: String, require: true },
+    collegeName: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     pickup: { type: Schema.ObjectId, ref: 'subPlace' },

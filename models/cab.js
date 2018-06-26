@@ -4,18 +4,16 @@ const Schema = mongoose.Schema;
 const CabSchema = new Schema({
 	isShared: {type: Boolean, default: false},
 	isBooked: {type: Boolean, default: false},
-	carName: {type: String, require: true},
+	carName: {type: String, required: true},
 	pickup: {type: String, default: 'Not Available'},
 	drop: {type: String, default: 'Not Available'},
 	startDate: {type: String, default: 'Not Available'},
 	startTime: {type: String, default: 'Not Available'},
-	seats: {type: Number, require: true},
-	driverName: {type: String, default: 'Not Available'},
-	driverContact: {type: String, default: 'Not Available'},
-	driverID: {type: String, default: 'Not Available'},
+	seats: {type: Number, required: true},
+	driver: {type: Schema.ObjectId, ref: 'Driver', default: null},
 	carNumber: {type: String, default: 'Not Available'},
-	collegeName: {type: String, default: 'Not Available'},
-	fare: {type: Number, require: true},
+	collegeName: {type: String, required: true},
+	fare: {type: Number, required: true},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now }
 });
