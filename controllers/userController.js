@@ -4,7 +4,7 @@ const async = require('async');
 exports.user_list = function(req, res, next) {
 	User.find({}).sort({createdAt: -1}).exec(function(err,users){
 		if(err) return next(err);
-		res.json(users);
+		res.json({'users': users});
 	});
 };
 
@@ -26,7 +26,7 @@ exports.user_detail = function(req, res, next) {
 			return next(err);
 		}
 		req.user = result;
-		res.json(req.user);
+		res.json({'user': req.user});
 	});
 };
 
