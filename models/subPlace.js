@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const subPlaceSchema = new Schema({
-    location: { type: String, require: true, unique: true },
+    location: { type: String, required: true, unique: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

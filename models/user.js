@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-	userName: {type: String, require: true, max: 100, min: 3},
-	email: {type: String, require: true, unique: true},
-	contact: {type: String, require: true, unique: true},
+	userName: {type: String, required: true, max: 100, min: 3},
+	email: {type: String, required: true, unique: true},
+	contact: {type: String, required: true, unique: true},
 	alternateContact: {type: String, default: 'Not Available'},
 	tripsCompleted: {type: Number, default: 0},
-	password: {type: String, require: true},
+	password: {type: String, required: true},
 	createdAt: {type: Date, default: Date.now },
 	updatedAt: {type: Date, default: Date.now },
-	carBooked: {type: Schema.ObjectId, ref: 'Cab'}
+	carBooked: {type: Schema.ObjectId, ref: 'Cab', default: null}
 });
 
 UserSchema.virtual('url').get(function(){
