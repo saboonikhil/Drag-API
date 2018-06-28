@@ -4,9 +4,10 @@ const jsonParser = require('body-parser').json;
 const routes = require('./routes');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+const port = process.env.port || 8080;
 
 
-mongoose.connect('mongodb://localhost:27017/RAN_USERS');
+mongoose.connect('mongodb://RAN:ranindia18@ds121321.mlab.com:21321/ran');
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
@@ -49,7 +50,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const port = process.env.port || 8080;
+
 
 app.listen(port, () => {
   console.log(`Web server listening on: ${port}`);
