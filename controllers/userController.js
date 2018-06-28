@@ -2,7 +2,7 @@ const User = require('../models/user').User;
 const async = require('async');
 
 exports.user_list = function(req, res, next) {
-	User.find({}).sort({createdAt: -1}).exec(function(err,users){
+	User.find({}).populate('cab').sort({createdAt: -1}).exec(function(err,users){
 		if(err) return next(err);
 		res.json({'users': users});
 	});
@@ -10,7 +10,7 @@ exports.user_list = function(req, res, next) {
 
 exports.create_user = function(req, res, next) {
 	const user = new User(req.body);
-	user.save(function(err,user){
+	user.populate('cab').save(function(err,user){
 		if(err) return next(err);
 		res.status(201);
 		res.json(user);
@@ -18,7 +18,7 @@ exports.create_user = function(req, res, next) {
 };
 
 exports.user_detail = function(req, res, next) {
-	User.findById(req.params.uID, function(err, result){
+	User.findById(req.params.uID).populate('cab').exec(function(err, result){
 		if(err) return next(err);
 		if(!result){
 			err = new Error('Failed to load user');
@@ -31,7 +31,7 @@ exports.user_detail = function(req, res, next) {
 };
 
 exports.user_update = function(req, res, next) {
-	User.findById(req.params.uID, function(err, result){
+	User.findById(req.params.uID).populate('cab').exec(function(err, result){
 		if(err) return next(err);
 		if(!result){
 			err = new Error('Failed to load user');
