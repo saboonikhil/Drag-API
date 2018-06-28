@@ -13,7 +13,7 @@ router.get('/users/:uID', user_controller.user_detail);
 router.put('/users/:uID', user_controller.user_update);
 router.delete('/users/:uID', user_controller.user_delete);
 
-//Car Detail Routes
+//Cab Routes
 router.get('/cabs', cab_controller.cab_list);
 router.post('/cabs', cab_controller.add_cab);
 router.get('/cabs/:cID', cab_controller.cab_detail);
