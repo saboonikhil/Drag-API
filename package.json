@@ -19,6 +19,7 @@
   "homepage": "https://github.com/imRishN/RAN_API_v01#readme",
   "dependencies": {
     "async": "^2.6.1",
+    "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "moment": "^2.22.2",

@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const moment = require('moment');
+const bcrypt = require('bcrypt');
 
 const UserSchema = new Schema({
 	userName: {type: String, required: true, max: 100, min: 3},
-	email: {type: String, required: true, unique: true},
+	email: {type: String, required: true, unique: true, trim: true},
 	contact: {type: String, required: true, unique: true},
 	alternateContact: {type: String, default: 'Not Available'},
 	tripsCompleted: {type: Number, default: 0},
@@ -23,8 +24,21 @@ UserSchema.virtual('updatedAt_formatted').get(function(){
 });
 
 UserSchema.method('update', function(updates, callback) {
+	if(updates.cabsBooked)
+	{
+		//append the array here or take this function to controller itself
+	}
 	Object.assign(this, updates, {updatedAt: new Date()});
 	this.save(callback);
+});
+
+UserSchema.pre('save', function(next){
+	const user = this;
+	bcrypt.hash(user.password, 10, function(err, hash){
+		if(err) return next(err);
+		user.password = hash;
+		next();
+	})
 });
 
 const User = mongoose.model('User', UserSchema);
