@@ -17,13 +17,13 @@ const options_db = {
 };
 
 //ADD HTTPS CONFIGURATION
-/*const fs = require('fs');
+const fs = require('fs');
 const hskey = fs.readFileSync('hacksparrow-key.pem');
 const hscert = fs.readFileSync('hacksparrow-cert.pem');
 const options = {
   key: hskey,
   cert: hscert
-};*/
+};
 
 
 mongoose.connect('mongodb://RAN:ranindia18@ds121321.mlab.com:21321/ran');
