@@ -5,8 +5,9 @@ const routes = require('./routes');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const port = process.env.port || 8080;
+const https = require('https');
 
-const options_db = {
+const options = {
     useMongoClient: true,
     autoIndex: false, // Don't build indexes
     reconnectTries: 100, // Never stop trying to reconnect
@@ -15,16 +16,6 @@ const options_db = {
     // If not connected, return errors immediately rather than waiting for reconnect
     bufferMaxEntries: 0
 };
-
-//ADD HTTPS CONFIGURATION
-const fs = require('fs');
-const hskey = fs.readFileSync('hacksparrow-key.pem');
-const hscert = fs.readFileSync('hacksparrow-cert.pem');
-const options = {
-  key: hskey,
-  cert: hscert
-};
-
 
 mongoose.connect('mongodb://RAN:ranindia18@ds121321.mlab.com:21321/ran');
 mongoose.Promise = global.Promise;
@@ -71,8 +62,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
-
-app
 app.listen(port, () => {
   console.log(`Web server listening on: ${port}`);
 });
