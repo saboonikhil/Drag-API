@@ -1,18 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
+const rand = require('csprng');
+const mongoose = require('mongoose');
+const gravatar = require('gravatar');
 const bodyParser = require('body-parser');
-router.use(bodyParser.urlencoded({ extended: false }));
-router.use(bodyParser.json());
 const User = require('../models/user').User;
-
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const config = require('../config/secret');
 
+router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.json());
+
 const auth = {
-	login: function(req,res){
-		const email = req.body.email || '';
-		const password = req.body.password || '';
+	signin: function(req,res){
+		const email = req.body.email;
+		const password = req.body.password;
 
 		if(email == '' || password == ''){
 			res.status(401);
@@ -23,8 +27,10 @@ const auth = {
 			return;
 		}
 		//Query the database for email and passowrd
-		const dbUserObj = auth.validate(email, password);
-
+		var dbUserObj;
+		auth.validate(email, password, function(dbUserObj){
+			dbUserObj = dbUserObj;
+		});
 		if(!dbUserObj)
 		{
 			res.status(401);
@@ -39,28 +45,28 @@ const auth = {
 		}
 	},
 
-	validate: function(email, password){
-		const dbUserObj = {
-			userName: 'Rishab Nahata',
-			//..fake data
-			//instead query the database with email password
-		};
-		return dbUserObj;
-	},
+	validate: function(email, password, callback){
 
-	validateUser: function(email){
-		const dbUserObj = {
-			userName: 'Rishab Nahata',
-			//..fake data
-			//instead query the database with email password
-		};
-		return dbUserObj;
-	},
+		var d;
+		User.find({email: email}, function(err, users){
+			if(err) return callback(err, null);
+			if(users.length!=0){
+				const temp = users[0].salt;
+				const hash_db = users[0].password;
+				const id = users[0].token;
+				const newpass = temp + password;
+				const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
+				if(hash_db == hashed_password){
+					callback(null, users[0]);
+				}
+			}
+		});
+	}
 }
 
 function genToken(user){
 	const expires = expiresIn(30); //30 days
-	const token = jwt.encode({
+	const token = jwt.sign({
 		exp: expires
 	}, require('../config/secret')());
 
