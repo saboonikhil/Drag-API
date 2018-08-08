@@ -7,7 +7,7 @@ const cab_controller = require('./controllers/cabController');
 const driver_controller = require('./controllers/driverController');
 const place_controller = require('./controllers/placeController');
 const sub_place_controller = require('./controllers/subPlaceController');
-const auth = require('./controllers/auth')
+const auth = require('./controllers/auth');
 
 
 //Routes that can be accessed by anyone

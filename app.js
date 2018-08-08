@@ -17,7 +17,8 @@ const options = {
     bufferMaxEntries: 0
 };
 
-mongoose.connect('mongodb://USER:PASSWORD@HOST:27017/DB');
+//mongoose.connect('mongodb://USER:PASSWORD@HOST:27017/DB');
+mongoose.connect('mongodb://localhost:27017/RAN_USERS');
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
