@@ -45,8 +45,9 @@ app.use(function(req, res, next) {
 
 app.use(logger('dev'));
 app.use(jsonParser());
+
 //Auth Middleware-checks if the token is valid
-app.all('/api/v1/*', [require('./middlewares/validateRequest')]);
+//app.all('/api/v1/*', [require('./middlewares/validateRequest')]);
 app.use('/', routes);
 
 app.use(function(req, res, next) {

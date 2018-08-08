@@ -33,7 +33,7 @@ UserSchema.method('update', function(updates, callback) {
 });
 
 
-UserSchema.statics.authenticate = function(email, password, callback){
+/*UserSchema.statics.authenticate = function(email, password, callback){
 	User.findOne({email: email})
 	.exec(function(err, user){
 		if(err) return callback(err);
@@ -48,7 +48,7 @@ UserSchema.statics.authenticate = function(email, password, callback){
 		})
 
 	});
-}
+}*/
 
 UserSchema.pre('save', function(next){
 	const user = this;
