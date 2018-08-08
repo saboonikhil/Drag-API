@@ -1,5 +1,8 @@
 const User = require('../models/user').User;
 const async = require('async');
+const crypto = require('crypto');
+const rand = require('csprng');
+const mongoose = require('mongoose');
 
 exports.user_list = function(req, res, next) {
 	User.find({}).populate('cab').sort({createdAt: -1}).exec(function(err,users){
@@ -10,11 +13,55 @@ exports.user_list = function(req, res, next) {
 
 exports.create_user = function(req, res, next) {
 	const user = new User(req.body);
-	user.populate('cab').save(function(err,user){
-		if(err) return next(err);
-		res.status(201);
-		res.json(user);
-	});
+	const email = user.email;
+	const password = user.password;
+
+	if(!(email.indexOf("@")+1==email.length))
+	{
+		if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/) && password.length > 4 && password.match(/[0-9]/) && password.match(/.[!,@,#,$,%,^,&,*,?,_,~]/)) 
+		{
+			const temp =rand(160, 36);
+			const newpass = temp + password;
+			const token = crypto.createHash('sha512').update(email +rand).digest("hex");
+			const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
+			user.password = hashed_password;
+			user.token = token;
+			user.salt = temp;
+
+			User.find({email: email}, function(err, users){
+				const len = users.length;
+				if(len==0){
+					user.populate('cab').save(function(err,user){
+					if(err) return next(err);
+					res.status(201);
+					res.json(user);
+					});
+				}
+				else
+				{
+					res.status(401);
+					res.json({
+						"status": 401,
+						"message": "Email already registered"
+						});
+				}
+			});
+		}
+		else{
+			res.status(401);
+			res.json({
+				"status": 401,
+				"message": "Password weak"
+				});
+		}
+	}
+	else{
+		res.status(401);
+		res.json({
+			"status": 401,
+			"message": "Email not valid"
+			});
+	}	
 };
 
 exports.user_detail = function(req, res, next) {

@@ -6,6 +6,7 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const port = process.env.port || 8080;
 const https = require('https');
+const connect = require('connect');
 
 const options = {
     useMongoClient: true,
@@ -45,7 +46,7 @@ app.use(function(req, res, next) {
 
 app.use(logger('dev'));
 app.use(jsonParser());
-
+app.use(connect.urlencoded());
 //Auth Middleware-checks if the token is valid
 //app.all('/api/v1/*', [require('./middlewares/validateRequest')]);
 app.use('/', routes);

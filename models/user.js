@@ -4,22 +4,25 @@ const moment = require('moment');
 const bcrypt = require('bcryptjs');
 
 const UserSchema = new Schema({
-	userName: {type: String, required: true, max: 100, min: 3},
+	username: {type: String, required: true, max: 100, min: 3},
 	email: {type: String, required: true, unique: true, trim: true},
 	contact: {type: String, required: true, unique: true},
-	alternateContact: {type: String, default: 'Not Available'},
-	tripsCompleted: {type: Number, default: 0},
+	alternate_contact: {type: String, default: 'Not Available'},
+	trips_completed: {type: Number, default: 0},
 	password: {type: String, required: true},
-	createdAt: {type: Date, default: Date.now },
-	updatedAt: {type: Date, default: Date.now },
-	cabsBooked: [{type: Schema.ObjectId, ref: 'Cab', default: null}]
+	token: String,
+	salt: String,
+	temp_str: String,
+	created_at: {type: Date, default: Date.now },
+	updated_at: {type: Date, default: Date.now },
+	cabs_booked: [{type: Schema.ObjectId, ref: 'Cab', default: null}]
 });
 
 UserSchema.virtual('url').get(function(){
 	return '/user/' + this._id;
 });
 
-UserSchema.virtual('updatedAt_formatted').get(function(){
+UserSchema.virtual('updated_at_formatted').get(function(){
 	return moment(this.updatedAt).format('MMMM Do, YYYY');
 });
 
@@ -28,7 +31,7 @@ UserSchema.method('update', function(updates, callback) {
 	{
 		//append the array here or take this function to controller itself
 	}
-	Object.assign(this, updates, {updatedAt: new Date()});
+	Object.assign(this, updates, {updated_at: new Date()});
 	this.save(callback);
 });
 
