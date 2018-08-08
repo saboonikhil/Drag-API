@@ -17,7 +17,7 @@ const sub_place_controller = require('./controllers/subPlaceController');
 //Routes that can be accessed only by authenticated & authorised users
 //User Routes
 router.get('/users', user_controller.user_list);
-router.post('/users', user_controller.create_user);
+router.post('/signup', user_controller.create_user);
 router.get('/users/:uID', user_controller.user_detail);
 router.put('/users/:uID', user_controller.user_update);
 router.delete('/users/:uID', user_controller.user_delete);
