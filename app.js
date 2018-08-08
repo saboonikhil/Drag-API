@@ -17,7 +17,8 @@ const options = {
     bufferMaxEntries: 0
 };
 
-mongoose.connect('mongodb://RAN:ranindia18@ds121321.mlab.com:21321/ran');
+//mongoose.connect('mongodb://RAN:ranindia18@ds121321.mlab.com:21321/ran');
+mongoose.connect('mongodb://localhost:27017/RAN_USERS');
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
