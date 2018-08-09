@@ -26,30 +26,26 @@ const auth = {
 			});
 			return;
 		}
-		//Query the database for email and passowrd
-		var dbUserObj;
+		//Query the database for email and password
 		auth.validate(email, password, function(dbUserObj){
-			dbUserObj = dbUserObj;
+			if(!dbUserObj)
+			{
+				res.status(401);
+				res.json({
+					"status": 401,
+					"message": "Invalid Credentials"
+				});
+				return;
+			}
+			if(dbUserObj){
+				res.json(genToken(dbUserObj));
+			}
 		});
-		if(!dbUserObj)
-		{
-			res.status(401);
-			res.json({
-				"status": 401,
-				"message": "Invalid Credentials"
-			});
-			return;
-		}
-		if(dbUserObj){
-			res.json(genToken(dbUserObj));
-		}
+		
 	},
 
 	validate: function(email, password, callback){
-
-		var d;
 		User.find({email: email}, function(err, users){
-			if(err) return callback(err, null);
 			if(users.length!=0){
 				const temp = users[0].salt;
 				const hash_db = users[0].password;
@@ -57,7 +53,7 @@ const auth = {
 				const newpass = temp + password;
 				const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
 				if(hash_db == hashed_password){
-					callback(null, users[0]);
+					callback(users[0]);
 				}
 			}
 		});
