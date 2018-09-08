@@ -9,7 +9,6 @@ const UserSchema = new Schema({
 	alternate_contact: {type: String, default: 'Not Available'},
 	trips_completed: {type: Number, default: 0},
 	password: {type: String, required: true},
-	token: String,
 	salt: String,
 	temp_str: String,
 	created_at: {type: Date, default: Date.now },
