@@ -34,15 +34,14 @@ exports.create_user = function(req, res, next) {
 					user.populate('cab').save(function(err,user){
 					if(err) return next(err);
 					res.status(201);
-					res.json(user);
+					res.json({'response':"Sucessfully Registered"});
 					});
 				}
 				else
 				{
 					res.status(401);
 					res.json({
-						"status": 401,
-						"message": "Email already registered"
+						'response': "Email already registered"
 						});
 				}
 			});
@@ -50,16 +49,14 @@ exports.create_user = function(req, res, next) {
 		else{
 			res.status(401);
 			res.json({
-				"status": 401,
-				"message": "Password weak"
+				'response': "Password weak"
 				});
 		}
 	}
 	else{
 		res.status(401);
 		res.json({
-			"status": 401,
-			"message": "Email not valid"
+			'response': "Email not valid"
 			});
 	}	
 };
