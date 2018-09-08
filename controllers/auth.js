@@ -20,9 +20,8 @@ const auth = {
 
 		if(email == '' || password == ''){
 			res.status(401);
-			res.json({
-				"status": 401,
-				"message": "Invalid Credentials"
+			res.json({	
+				"response": "Invalid Credentials"
 			});
 			return;
 		}
@@ -32,13 +31,14 @@ const auth = {
 			{
 				res.status(401);
 				res.json({
-					"status": 401,
-					"message": "Invalid Credentials"
+					"response": "Invalid Credentials"
 				});
 				return;
 			}
 			if(dbUserObj){
-				res.json(genToken(dbUserObj));
+				//callback({'response':"Login Sucess",'res':true,'token':id,'grav':grav_url});
+				//res.json(genToken(dbUserObj));
+				res.json({'response':"Login Sucess",'res':true,'token':genToken(dbUserObj), 'user': dbUserObj});
 			}
 		});
 		
