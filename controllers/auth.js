@@ -21,7 +21,7 @@ const auth = {
 		if(email == '' || password == ''){
 			res.status(401);
 			res.json({	
-				"response": "Invalid Credentials"
+				"response": "Invalid Credentials", 'res': false
 			});
 			return;
 		}
@@ -31,14 +31,17 @@ const auth = {
 			{
 				res.status(401);
 				res.json({
-					"response": "Invalid Credentials"
+					"response": "Invalid Credentials", 'res': false
 				});
 				return;
 			}
 			if(dbUserObj){
-				//callback({'response':"Login Sucess",'res':true,'token':id,'grav':grav_url});
-				//res.json(genToken(dbUserObj));
-				res.json({'response':"Login Sucess",'res':true,'token':genToken(dbUserObj), 'user': dbUserObj});
+				if(dbUserObj.res)
+					res.json({'response':"Signed In Successfully",'res':true,'token':genToken(dbUserObj.user)});
+				else
+				{
+					res.json(dbUserObj);
+				}
 			}
 		});
 		
@@ -53,8 +56,14 @@ const auth = {
 				const newpass = temp + password;
 				const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
 				if(hash_db == hashed_password){
-					callback(users[0]);
+					callback({'user': users[0], 'res': true});
 				}
+				else{
+					callback({'response':"Invalid Password",'res':false});
+				}
+			}
+			else {
+				callback({'response':"Email Not Registered",'res':false});
 			}
 		});
 	}
