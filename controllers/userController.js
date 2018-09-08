@@ -22,10 +22,8 @@ exports.create_user = function(req, res, next) {
 		{
 			const temp =rand(160, 36);
 			const newpass = temp + password;
-			const token = crypto.createHash('sha512').update(email +rand).digest("hex");
 			const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
 			user.password = hashed_password;
-			user.token = token;
 			user.salt = temp;
 
 			User.find({email: email}, function(err, users){
