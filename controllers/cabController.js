@@ -51,3 +51,7 @@ exports.cab_delete = function(req, res, next) {
         res.json(cab);                         
     });
 };
+
+exports.select_cab = function(req, res, next) {
+    
+}
