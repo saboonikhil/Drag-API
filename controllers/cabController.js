@@ -57,7 +57,10 @@ exports.select_cab = function(req, res, next) {
         const len = result.length;
 		if (len == 0) {
             if(err) return next(err);
+			res.status(404);
+			res.json({'message':"No cabs available", 'res': false});
         } else {
+            res.status(100);
             var cabs = []; 
             var j = 0;
             if(req.params.pickup === "na") var location = req.params.drop;
@@ -79,8 +82,10 @@ exports.select_cab = function(req, res, next) {
             }
             if(j == 0){
                 if(err) return next(err);
+			    res.status(404);
+			    res.json({'message':"No cabs available", 'res': false});
             } else {
-                res.json(cabs);
+                res.status(200).json(cabs);
             }
         }
     });
