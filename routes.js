@@ -21,6 +21,7 @@ router.post('/signup', user_controller.create_user);
 router.get('/users/:uID', user_controller.user_detail);
 router.put('/users/:uID', user_controller.user_update);
 router.delete('/users/:uID', user_controller.user_delete);
+router.put('/users/:uID/bookCab', user_controller.user_book_cab);
 
 
 //Route that can be accessed by authenticated users

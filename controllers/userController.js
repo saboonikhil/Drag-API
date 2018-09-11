@@ -30,9 +30,9 @@ exports.create_user = function(req, res, next) {
 				const len = users.length;
 				if(len==0){
 					user.populate('cab').save(function(err,user){
-					if(err) return next(err);
-					res.status(201);
-					res.json({'response':"Sucessfully Registered", 'res': true});
+						if(err) return next(err);
+						res.status(201);
+						res.json({'response':"Sucessfully Registered", 'res': true});
 					});
 				}
 				else
@@ -40,7 +40,7 @@ exports.create_user = function(req, res, next) {
 					res.status(401);
 					res.json({
 						'response': "Email already registered", 'res': false
-						});
+					});
 				}
 			});
 		}
@@ -48,14 +48,14 @@ exports.create_user = function(req, res, next) {
 			res.status(401);
 			res.json({
 				'response': "Password weak", 'res': false
-				});
+			});
 		}
 	}
 	else{
 		res.status(401);
 		res.json({
 			'response': "Email not valid", 'res': false
-			});
+		});
 	}	
 };
 
@@ -84,6 +84,32 @@ exports.user_update = function(req, res, next) {
 		req.user.update(req.body, function(err, result) {
 			if(err) return next(err);
 			res.json(result);
+		});
+	});
+};
+
+exports.user_book_cab = function(req, res, next) {
+	/*User.findOneAndUpdate(req.params.uID, {$push: {cabs_booked: req.body.cabsBooked}}).populate('cab').exec(function(err, result){
+		if(err) return next(err);
+		if(!result){
+			err = new Error('Failed to book cab');
+			err.status = 404;
+			return next(err);
+		}
+		req.user = result;
+		res.json({'user': req.user});
+	});*/
+	User.findById(req.params.uID).populate('cab').exec(function(err,user){
+		if(err) return next(err);
+		if(!user){
+			err = new Error('Failed to load user');
+			err.status = 404;
+			return next(err);
+		}
+		user.cabs_booked.push(req.body.cabs_booked);
+		user.save(function(err) {
+			if (err) return next(err);
+			res.json(user);
 		});
 	});
 };
