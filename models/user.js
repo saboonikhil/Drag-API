@@ -25,11 +25,9 @@ UserSchema.virtual('updated_at_formatted').get(function(){
 });
 
 UserSchema.method('update', function(updates, callback) {
-	if(updates.cabsBooked)
-	{
-		//append the array here or take this function to controller itself
-	}
+	
 	Object.assign(this, updates, {updated_at: new Date()});
+	
 	this.save(callback);
 });
 
