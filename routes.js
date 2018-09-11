@@ -30,7 +30,6 @@ router.post('/cabs', cab_controller.add_cab);
 router.get('/cabs/:cID', cab_controller.cab_detail);
 router.put('/cabs/:cID', cab_controller.cab_update);
 router.delete('/cabs/:cID', cab_controller.cab_delete);
-router.get('/cab/:college/:pickup/:drop/:seats/:time', cab_controller.select_cab);
 
 //Driver Routes-authentication and authorisation both required
 router.get('/drivers', driver_controller.list_driver);
