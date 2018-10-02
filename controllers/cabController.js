@@ -1,24 +1,17 @@
 const Cab = require('../models/cab').Cab;
 
 exports.cab_list = function(req, res, next) {
-
-		let pickup = req.query.pickup;
-		/*if(typeof pickup == 'undefined')
-			pickup = null;*/
-
-		let drop = req.query.drop;
-		//if(typeof)
         Cab.find({
-        		isBooked: false,
         		collegeName: req.query.collegeName,
         		$and : [
         				{ $or : [ { pickup : null }, { pickup : req.query.pickup } ] },
-        				{ $or : [ { drop : null }, { drop : req.query.drop } ] }
+        				{ $or : [ { drop : null }, { drop : req.query.drop } ] },
+        				{ $or : [ { isBooked : false}, {isShared : true } ] }
     				   ],
         		  //startDate: req.query.startDate,
         		  //startTime: req.query.startTime,
         		  seats: { $gte :req.query.seats},
-        		  /*isShared: req.query.isShared*/})
+        		  })
         		 .sort({createdAt: -1}).populate('driver').exec(function(err, cabs){
         	if(err) return next(err);
         	const len = cabs.length;
@@ -32,12 +25,7 @@ exports.cab_list = function(req, res, next) {
         		res.json(cabs);
         		res.status(201);
         	}
-            /* else {
-                res.status(100);
-                var cabs = []; 
-                var j = 0;
-                if(req.query.pickup === "na") var location = req.query.drop;
-                else var location = "na"; //hostel location assumed as "na", TODO: Connect with subPlace
+            /* 
     
                 const time = req.query.time; //startDateTime in milliseconds
                 const lowerLimit = time - 7200000;
@@ -53,14 +41,7 @@ exports.cab_list = function(req, res, next) {
                         }
                     }
                 }
-                if(j == 0){
-                    if(err) return next(err);
-                    res.status(404);
-                    res.json({'message':"No cabs available", 'res': false});
-                } else {
-                    res.status(200).json(cabs);
-                }
-            }*/
+                */
     });
 };
 
