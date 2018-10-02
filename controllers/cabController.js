@@ -1,19 +1,38 @@
 const Cab = require('../models/cab').Cab;
 
 exports.cab_list = function(req, res, next) {
-    if(req.query.college == null){
-        Cab.find({}).sort({createdAt: -1}).populate('driver').exec(function(err,cabs){
-            if(err) return next(err);
-            res.json(cabs);
-        });
-    } else {
-        Cab.find({isBooked: false, collegeName: req.query.college}, function(err, result){
-            const len = result.length;
-            if (len == 0) {
-                if(err) return next(err);
-                res.status(404);
-                res.json({'message':"No cabs available", 'res': false});
-            } else {
+
+		let pickup = req.query.pickup;
+		/*if(typeof pickup == 'undefined')
+			pickup = null;*/
+
+		let drop = req.query.drop;
+		//if(typeof)
+        Cab.find({
+        		isBooked: false,
+        		collegeName: req.query.collegeName,
+        		$and : [
+        				{ $or : [ { pickup : null }, { pickup : req.query.pickup } ] },
+        				{ $or : [ { drop : null }, { drop : req.query.drop } ] }
+    				   ],
+        		  //startDate: req.query.startDate,
+        		  //startTime: req.query.startTime,
+        		  seats: { $gte :req.query.seats},
+        		  /*isShared: req.query.isShared*/})
+        		 .sort({createdAt: -1}).populate('driver').exec(function(err, cabs){
+        	if(err) return next(err);
+        	const len = cabs.length;
+        	if(len == 0)
+        	{
+        		res.status(201);
+        		res.json({'response':"No cabs available", 'res': true});
+        	}
+        	else
+        	{
+        		res.json(cabs);
+        		res.status(201);
+        	}
+            /* else {
                 res.status(100);
                 var cabs = []; 
                 var j = 0;
@@ -41,10 +60,10 @@ exports.cab_list = function(req, res, next) {
                 } else {
                     res.status(200).json(cabs);
                 }
-            }
-        });
-    }
+            }*/
+    });
 };
+
 
 exports.add_cab = function(req, res, next) {
     const cab = new Cab(req.body);
