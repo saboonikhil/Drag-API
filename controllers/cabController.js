@@ -1,18 +1,20 @@
 const Cab = require('../models/cab').Cab;
 
 exports.cab_list = function(req, res, next) {
+
+		let startTime = req.query.startTime;
+		var startTimeISOUpperLimit = new Date(startTime+43200000).toISOString(); // Considering that time fluctuation is allowed for 12hours
+		var startTimeISOLowerLimit = new Date(startTime-43200000).toISOString();
         Cab.find({
         		collegeName: req.query.collegeName,
         		$and : [
         				{ $or : [ { pickup : null }, { pickup : req.query.pickup } ] },
         				{ $or : [ { drop : null }, { drop : req.query.drop } ] },
-        				{ $or : [ { isBooked : false}, {isShared : true } ] }
-    				   ],
-        		  //startDate: req.query.startDate,
-        		  //startTime: req.query.startTime,
-        		  seats: { $gte :req.query.seats},
-        		  })
-        		 .sort({createdAt: -1}).populate('driver').exec(function(err, cabs){
+        				{ $or : [ { isBooked : false}, {isShared : true } ] },
+        				{ $or : [ { startTime: { $lte : startTimeISOUpperLimit, $gte: startTimeISOLowerLimit} }, { startTime : null } ] }
+    				   ],       		
+        		seats: { $gte : req.query.seats},
+        		}).sort({createdAt: -1}).populate('driver').exec(function(err, cabs){
         	if(err) return next(err);
         	const len = cabs.length;
         	if(len == 0)
@@ -25,26 +27,8 @@ exports.cab_list = function(req, res, next) {
         		res.json(cabs);
         		res.status(201);
         	}
-            /* 
-    
-                const time = req.query.time; //startDateTime in milliseconds
-                const lowerLimit = time - 7200000;
-                const upperLimit = time + 7200000;
-    
-                for(var i = 0; i < len; i++){
-                    if(result[i].drop == location && result[i].seats == req.query.seats) {
-                        var startDateTime = result[i].startDate + " " + result[i].startTime + " GMT+0530";
-                        var cabTime = Date.parse(startDateTime);
-                        if(cabTime >= lowerLimit && cabTime <= upperLimit){
-                            cabs[j] = result[i];
-                            j++;
-                        }
-                    }
-                }
-                */
     });
 };
-
 
 exports.add_cab = function(req, res, next) {
     const cab = new Cab(req.body);
