@@ -2,9 +2,16 @@ const Cab = require('../models/cab').Cab;
 
 exports.cab_list = function(req, res, next) {
 
-		let startTime = req.query.startTime;
-		var startTimeISOUpperLimit = new Date(startTime+43200000).toISOString(); // Considering that time fluctuation is allowed for 12hours
-		var startTimeISOLowerLimit = new Date(startTime-43200000).toISOString();
+		const startTime = req.query.startTime;
+
+		const startTimeUpperLimit = new Date(startTime);
+		startTimeUpperLimit.setHours(startTimeUpperLimit.getHours() + 12); // Considering that time fluctuation is allowed for +12hours
+		const startTimeISOUpperLimit = startTimeUpperLimit.toISOString();
+
+		const startTimeLowerLimit = new Date(startTime);
+		startTimeLowerLimit.setHours(startTimeLowerLimit.getHours() - 12); // Considering that time fluctuation is allowed for -12hours
+		const startTimeISOLowerLimit = startTimeLowerLimit.toISOString();	
+
         Cab.find({
         		collegeName: req.query.collegeName,
         		$and : [
