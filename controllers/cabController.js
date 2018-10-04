@@ -10,7 +10,12 @@ exports.cab_list = function(req, res, next) {
 
 		const startTimeLowerLimit = new Date(startTime);
 		startTimeLowerLimit.setHours(startTimeLowerLimit.getHours() - 12); // Considering that time fluctuation is allowed for -12hours
-		const startTimeISOLowerLimit = startTimeLowerLimit.toISOString();	
+		var startTimeISOLowerLimit = startTimeLowerLimit.toISOString();
+
+		if((new Date() - startTimeLowerLimit) > 0)
+		{
+			startTimeISOLowerLimit = new Date(startTime).toISOString();
+		}	
 
         Cab.find({
         		collegeName: req.query.collegeName,
