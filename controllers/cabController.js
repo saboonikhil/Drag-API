@@ -28,17 +28,10 @@ exports.cab_list = function(req, res, next) {
         		seats: { $gte : req.query.seats},
         		}).sort({createdAt: -1}).populate('driver').exec(function(err, cabs){
         	if(err) return next(err);
-        	const len = cabs.length;
-        	if(len == 0)
-        	{
-        		res.status(201);
-        		res.json({'response':"No cabs available", 'res': true});
-        	}
-        	else
-        	{
+        	
         		res.json(cabs);
         		res.status(201);
-        	}
+        	
     });
 };
 
