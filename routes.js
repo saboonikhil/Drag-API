@@ -30,7 +30,6 @@ router.put('/api/users/:uID/bookCab', user_controller.user_book_cab);
 //Route that can be accessed by authenticated users
 //Cab Routes
 router.get('/api/cabs', cab_controller.cab_list);
-router.put('/api/places/:pID', place_controller.place_update);
 //Routes-authentication and authorisation both required
 router.post('/api/admin/cabs', cab_controller.add_cab);
 
@@ -42,7 +41,7 @@ router.delete('/api/admin/cabs/:cID', cab_controller.cab_delete);
 
 //Driver Routes-authentication and authorisation both required
 router.get('/api/drivers', driver_controller.list_driver);
-router.put('/api/places/:pID', place_controller.place_update);
+
 //Routes-authentication and authorisation both required
 router.post('/api/admin/drivers', driver_controller.add_driver);
 //Driver Routes-authentication and authorisation both required
@@ -54,7 +53,6 @@ router.delete('/api/admin/drivers/:dID', driver_controller.driver_delete);
 
 //Place Routes - authentication required
 router.get('/api/places', place_controller.list_place);
-router.put('/api/places/:pID', place_controller.place_update);
 //Routes-authentication and authorisation both required
 router.post('/api/admin/places', place_controller.add_place);
 
@@ -66,7 +64,7 @@ router.delete('/api/admin/places/:pID', place_controller.place_delete);
 
 //Sub Place Routes - authentication required
 router.get('/api/subPlaces', sub_place_controller.list_sub_place);
-router.put('/api/places/:pID', place_controller.place_update);
+
 //Routes-authentication and authorisation both required
 router.post('/api/admin/subPlaces', sub_place_controller.add_sub_place);
 router.get('/api/subPlaces/:sID', sub_place_controller.sub_place_detail);
