@@ -11,12 +11,13 @@ module.exports = function(req, res, next) {
   //if(req.method == 'OPTIONS') next();
  //TOKEN: To be put in request
  //KEY: Current email of logged in user
- const token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
+ const token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token'];
  const key = (req.body && req.body.x_key) || (req.query && req.query.x_key) || req.headers['x-key'];
+ //console.log(key);
  if (token || key) {
     try {
         const decoded = jwt.decode(token, require('../config/secret.js')());
-
+        //console.log(decoded);
         if (decoded.exp <= Date.now()) 
         {
             res.status(400);
@@ -26,8 +27,9 @@ module.exports = function(req, res, next) {
             });
             return;
         }
-        validateRequest.validateUser(key, function(dbUser)
+        validateUser(key, function(dbUser)
         {
+            console.log(dbUser);
             if(!dbUser)
             {
                 res.status(401);
@@ -40,7 +42,7 @@ module.exports = function(req, res, next) {
             if(dbUser){
                 if(dbUser.res)
                 {
-                    if (/*(req.url.indexOf('admin') >= 0 && dbUser.role == 'admin') || (req.url.indexOf('admin') < 0 && */req.url.indexOf('/api/') >= 0)
+                    if ((req.url.indexOf('admin') >= 0 && dbUser.role == 'admin') || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/') >= 0))
                     {
                         next(); // To move to next middleware
                     } 
