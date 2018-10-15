@@ -66,11 +66,21 @@ const auth = {
 				callback({'response':"Email Not Registered",'res':false});
 			}
 		});
+	},
+	validateUser: function(email, callback) {
+		User.find({email: email}, function(err, users){
+			if(users.length!=0){
+				callback({'user': users[0], 'res': true});
+			}
+			else {
+				callback({'response':"Email Not Registered",'res':false});
+			}
+		});
 	}
 }
 
 function genToken(user){
-	const expires = expiresIn(30); //30 days
+	const expires = expiresIn(180); //180 days
 	const token = jwt.sign({
 		exp: expires
 	}, require('../config/secret')());
