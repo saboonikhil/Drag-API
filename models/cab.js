@@ -8,6 +8,7 @@ const CabSchema = new Schema({
 	pickup: {type: String, default: null},
 	drop: {type: String, default: null},
 	startTime: {type: Date, default: null},
+	endTime: {type: Date, default: null},
 	seats: {type: String, required: true},
 	driver: {type: Schema.ObjectId, ref: 'Driver', default: null},
 	carNumber: {type: String, default: 'Not Available'},
