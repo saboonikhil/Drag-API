@@ -29,7 +29,8 @@ router.put('/api/users/:uID/bookCab', user_controller.user_book_cab);
 
 //Route that can be accessed by authenticated users
 //Cab Routes
-router.get('/api/cabs', cab_controller.cab_list);
+router.get('/api/cabs', cab_controller.available_cab_list);
+router.get('/api/admin/cabs', cab_controller.all_cab_list);
 //Routes-authentication and authorisation both required
 router.post('/api/admin/cabs', cab_controller.add_cab);
 
@@ -37,6 +38,7 @@ router.get('/api/cabs/:cID', cab_controller.cab_detail);
 router.put('/cabs/:cID', cab_controller.cab_update);
 //Routes-authentication and authorisation both required
 router.delete('/api/admin/cabs/:cID', cab_controller.cab_delete);
+router.get('/api/admin/getAllCabs')
 
 
 //Driver Routes-authentication and authorisation both required
