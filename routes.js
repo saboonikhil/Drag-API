@@ -11,14 +11,14 @@ const auth = require('./controllers/auth');
 
 
 //Routes that can be accessed by anyone
-router.post('/signin',auth.signin);
+router.post('/signIn',auth.signin);
 
 
 //Routes that can be accessed only by authenticated users
 //User Routes
 router.get('/api/users', user_controller.user_list);
 //Routes that can be accessed by anyone
-router.post('/signup', user_controller.create_user);
+router.post('/signUp', user_controller.create_user);
 router.get('/api/users/:uID', user_controller.user_detail);
 router.put('/api/users/:uID', user_controller.user_update);
 //Routes-authentication and authorisation both required
