@@ -60,7 +60,7 @@ exports.create_user = function(req, res, next) {
 };
 
 exports.user_detail = function(req, res, next) {
-	User.findById(req.params.uID).populate('cab').exec(function(err, result){
+	User.findById(req.params.uID).populate('cabsBooked').exec(function(err, result){
 		if(err) return next(err);
 		if(!result){
 			err = new Error('Failed to load user');
