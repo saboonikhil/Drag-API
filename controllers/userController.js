@@ -68,7 +68,7 @@ exports.user_detail = function(req, res, next) {
 			return next(err);
 		}
 		req.user = result;
-		res.json({'user': req.user});
+		res.json(req.user);
 	});
 };
 
