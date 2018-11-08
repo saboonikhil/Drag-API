@@ -6,7 +6,7 @@ const UserSchema = new Schema({
 	username: {type: String, required: true, max: 100, min: 3},
 	email: {type: String, required: true, unique: true, trim: true},
 	contact: {type: String, required: true, unique: true},
-	alternateContact: {type: String, default: 'Not Available'},
+	alternateContact: {type: String, default: null},
 	password: {type: String, required: true},
 	cabsBooked: [{type: Schema.ObjectId, ref: 'Cab', default: null}],
 	tripsCompleted: {type: Number, default: 0},
