@@ -106,7 +106,7 @@ exports.user_book_cab = function(req, res, next) {
 			err.status = 404;
 			return next(err);
 		}
-		user.cabs_booked.push(req.body.cabs_booked);
+		user.cabsBooked.push(req.body.cabsBooked);
 		user.save(function(err) {
 			if (err) return next(err);
 			res.json(user);
