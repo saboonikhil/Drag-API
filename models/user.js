@@ -6,14 +6,14 @@ const UserSchema = new Schema({
 	username: {type: String, required: true, max: 100, min: 3},
 	email: {type: String, required: true, unique: true, trim: true},
 	contact: {type: String, required: true, unique: true},
-	alternate_contact: {type: String, default: 'Not Available'},
-	trips_completed: {type: Number, default: 0},
+	alternateContact: {type: String, default: null},
 	password: {type: String, required: true},
+	cabsBooked: [{type: Schema.ObjectId, ref: 'Cab', default: null}],
+	tripsCompleted: {type: Number, default: 0},
 	salt: String,
 	temp_str: String,
-	created_at: {type: Date, default: Date.now },
-	updated_at: {type: Date, default: Date.now },
-	cabs_booked: [{type: Schema.ObjectId, ref: 'Cab', default: null}]
+	createdAt: {type: Date, default: Date.now },
+	updatedAt: {type: Date, default: Date.now },
 });
 
 UserSchema.virtual('url').get(function(){
