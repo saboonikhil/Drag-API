@@ -73,7 +73,7 @@ exports.user_detail = function(req, res, next) {
 };
 
 exports.user_update = function(req, res, next) {
-	User.findById(req.params.uID).populate('cab').exec(function(err, result){
+	User.findById(req.params.uID).populate('cabsBooked').exec(function(err, result){
 		if(err) return next(err);
 		if(!result){
 			err = new Error('Failed to load user');
@@ -99,7 +99,7 @@ exports.user_book_cab = function(req, res, next) {
 		req.user = result;
 		res.json({'user': req.user});
 	});*/
-	User.findById(req.params.uID).populate('cab').exec(function(err,user){
+	User.findById(req.params.uID).populate('cabsBooked').exec(function(err,user){
 		if(err) return next(err);
 		if(!user){
 			err = new Error('Failed to load user');
