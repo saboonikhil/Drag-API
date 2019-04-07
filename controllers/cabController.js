@@ -26,7 +26,7 @@ exports.available_cab_list = function(req, res, next) {
         				{ $or : [ { startTime: { $lte : startTimeISOUpperLimit, $gte: startTimeISOLowerLimit} }, { startTime : null } ] }
     				   ],       		
         		seats: { $gte : req.query.seats},
-        		}).sort({createdAt: -1}).populate('driver').exec(function(err, cabs){
+        		}).sort({createdAt: -1}).populate('partner').exec(function(err, cabs){
         	if(err) return next(err);
         	
         		res.json(cabs);
@@ -37,73 +37,10 @@ exports.available_cab_list = function(req, res, next) {
 
 exports.all_cab_list = function(req, res, next) {
 
-	const isShared = req.query.isShared;
-	const isBooked = req.query.isBooked;
-	const carName = req.query.carName;
-	const pickup = req.query.pickup;
-	const drop = req.query.drop;
-	const startTime = req.query.startTime;
-	const endTime = req.query.endTime;
-	const seats = req.query.seats;
-	const carNumber = req.query.carNumber;
-	const collegeName = req.query.collegeName;
-	const fare = req.query.fare;
-
-	if(typeof isShared === "undefined")
-	{
-		isShared = null;
-	}
-
-	if(typeof isBooked === "undefined")
-	{
-		isBooked = null;
-	}
-
-	if(typeof carName === "undefined")
-	{
-		carName = null;
-	}
-
-	if(typeof pickup === "undefined")
-	{
-		pickup = null;
-	}
-
-	if(typeof drop === "undefined")
-	{
-		drop = null;
-	}
-
-	if(typeof startTime === "undefined")
-	{
-		startTime = null;
-	}
-
-	if(typeof endTime === "undefined")
-	{
-		endTime = null;
-	}
-
-	if(typeof seats === "undefined")
-	{
-		seats = null;
-	}
-
-	if(typeof carNumber === "undefined")
-	{
-		carNumber = null;
-	}
-
-	if(typeof collegeName === "undefined")
-	{
-		collegeName = null;
-	}
-
-	if(typeof fare === "undefined")
-	{
-		fare = null;
-	}
-
+	Cab.find({}).populate('partner').sort({createdAt: -1}).exec(function(err,cabs){
+		if(err) return next(err);
+		res.json(cabs);
+	});
 }
 
 exports.add_cab = function(req, res, next) {

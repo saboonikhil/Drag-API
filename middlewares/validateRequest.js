@@ -29,7 +29,6 @@ module.exports = function(req, res, next) {
         }
         validateUser(key, function(dbUser)
         {
-            console.log(dbUser);
             if(!dbUser)
             {
                 res.status(401);
@@ -42,7 +41,7 @@ module.exports = function(req, res, next) {
             if(dbUser){
                 if(dbUser.res)
                 {
-                    if ((req.url.indexOf('admin') >= 0 && dbUser.role == 'admin') || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/') >= 0))
+                    if ((req.url.indexOf('admin') >= 0 && dbUser.user.role == 'admin') ||(req.url.indexOf('admin') >= 0 && dbUser.role == 'admin') || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/') >= 0))
                     {
                         next(); // To move to next middleware
                     } 

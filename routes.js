@@ -4,21 +4,21 @@ const router = express.Router();
 
 const user_controller = require('./controllers/userController');
 const cab_controller = require('./controllers/cabController');
-const driver_controller = require('./controllers/driverController');
+const partner_controller = require('./controllers/partnerController');
 const place_controller = require('./controllers/placeController');
 const sub_place_controller = require('./controllers/subPlaceController');
 const auth = require('./controllers/auth');
 
 
 //Routes that can be accessed by anyone
-router.post('/signIn',auth.signin);
+router.post('/signin',auth.signin);
 
 
 //Routes that can be accessed only by authenticated users
 //User Routes
-router.get('/api/users', user_controller.user_list);
+router.get('/api/admin/users', user_controller.user_list);
 //Routes that can be accessed by anyone
-router.post('/signUp', user_controller.create_user);
+router.post('/signup', user_controller.create_user);
 router.get('/api/users/:uID', user_controller.user_detail);
 router.put('/api/users/:uID', user_controller.user_update);
 //Routes-authentication and authorisation both required
@@ -38,41 +38,31 @@ router.get('/api/cabs/:cID', cab_controller.cab_detail);
 router.put('/cabs/:cID', cab_controller.cab_update);
 //Routes-authentication and authorisation both required
 router.delete('/api/admin/cabs/:cID', cab_controller.cab_delete);
-router.get('/api/admin/getAllCabs')
 
 
-//Driver Routes-authentication and authorisation both required
-router.get('/api/drivers', driver_controller.list_driver);
+//partner Routes-authentication and authorisation both required
+router.get('/api/admin/partners', partner_controller.list_partner);
 
+//Routes-authentication and authorisation both required - Admin Signup
+router.post('/api/admin/signup', partner_controller.add_partner);
+//partner Routes-authentication and authorisation both required
+router.get('/api/admin/partners/:dID', partner_controller.partner_detail);
+router.put('/api/admin/partners/:dID', partner_controller.partner_update);
 //Routes-authentication and authorisation both required
-router.post('/api/admin/drivers', driver_controller.add_driver);
-//Driver Routes-authentication and authorisation both required
-router.get('/api/drivers/:dID', driver_controller.driver_detail);
-router.put('/api/drivers/:dID', driver_controller.driver_update);
+router.delete('/api/admin/partners/:dID', partner_controller.partner_delete);
+
+
+//Location Routes - authentication required
+router.get('/api/locations', location_controller.list_place);
 //Routes-authentication and authorisation both required
-router.delete('/api/admin/drivers/:dID', driver_controller.driver_delete);
+router.post('/api/admin/locations', location_controller.add_location);
 
-
-//Place Routes - authentication required
-router.get('/api/places', place_controller.list_place);
+router.get('/api/locations/:lID', location_controller.location_detail);
+router.put('/api/admin/locations/:lID', location_controller.location_update);
+//Add Sub Location
+router.put('/api/admin/locations/:lID/addSubLocation', location_controller.add_sub_location);
 //Routes-authentication and authorisation both required
-router.post('/api/admin/places', place_controller.add_place);
-
-router.get('/api/places/:pID', place_controller.place_detail);
-router.put('/api/places/:pID', place_controller.place_update);
-//Routes-authentication and authorisation both required
-router.delete('/api/admin/places/:pID', place_controller.place_delete);
-
-
-//Sub Place Routes - authentication required
-router.get('/api/subPlaces', sub_place_controller.list_sub_place);
-
-//Routes-authentication and authorisation both required
-router.post('/api/admin/subPlaces', sub_place_controller.add_sub_place);
-router.get('/api/subPlaces/:sID', sub_place_controller.sub_place_detail);
-router.put('/api/subPlaces/:sID', sub_place_controller.sub_place_update);
-//Routes-authentication and authorisation both required
-router.delete('/api/admin/subPlaces/:sID', sub_place_controller.sub_place_delete);
+router.delete('/api/admin/locations/:lID', location_controller.location_delete);
 
 module.exports = router;
 

@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const gravatar = require('gravatar');
 const bodyParser = require('body-parser');
 const User = require('../models/user').User;
+const Partner = require('../models/partner').Partner;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const config = require('../config/secret');
@@ -17,6 +18,11 @@ const auth = {
 	signin: function(req,res){
 		const email = req.body.email;
 		const password = req.body.password;
+		const role = req.body.role;
+		if(typeof(role) != "undefined")
+		{
+			role = "user";
+		}
 
 		if(email == '' || password == ''){
 			res.status(401);
@@ -25,61 +31,112 @@ const auth = {
 			});
 			return;
 		}
-		//Query the database for email and password
-		auth.validate(email, password, function(dbUserObj){
-			if(!dbUserObj)
-			{
-				res.status(401);
-				res.json({
-					"response": "Invalid Credentials", 'res': false
-				});
-				return;
-			}
-			if(dbUserObj){
-				if(dbUserObj.res)
-					res.json({'response':"Signed In Successfully",'res':true,'token':genToken(dbUserObj.user)});
-				else
+		//Query the database for role, email and password
+		if(role == "user")
+		{
+			auth.validate(email, password, function(dbUserObj){
+				if(!dbUserObj)
 				{
-					res.json(dbUserObj);
+					res.status(401);
+					res.json({
+						"response": "Invalid Credentials", 'res': false
+					});
+					return;
 				}
-			}
-		});
-		
-	},
+				if(dbUserObj){
+					if(dbUserObj.res)
+						res.json({'response':"Signed In Successfully",'res':true,'token':genToken(dbUserObj.user)});
+					else
+					{
+						res.json(dbUserObj);
+					}
+				}
+			});
+		}
+		else{
+			auth.validatePartner(email, password, function(dbPartnerObj){
+				if(!dbPartnerObj)
+				{
+					res.status(401);
+					res.json({
+						"response": "Invalid Credentials", 'res': false
+					});
+					return;
+				}
+				if(dbPartnerObj){
+					if(dbPartnerObj.res)
+						res.json({'response':"Signed In Successfully",'res':true,'token':genToken(dbPartnerObj.partner)});
+					else
+					{
+						res.json(dbPartnerObj);
+					}
+				}
+			});
+		}
 
-	validate: function(email, password, callback){
-		User.find({email: email}, function(err, users){
-			if(users.length!=0){
-				const temp = users[0].salt;
-				const hash_db = users[0].password;
-				const id = users[0].token;
-				const newpass = temp + password;
-				const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
-				if(hash_db == hashed_password){
+		},
+
+		validate: function(email, password, callback){
+			User.find({email: email}, function(err, users){
+				if(users.length!=0){
+					const temp = users[0].salt;
+					const hash_db = users[0].password;
+					const id = users[0].token;
+					const newpass = temp + password;
+					const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
+					if(hash_db == hashed_password){
+						callback({'user': users[0], 'res': true});
+					}
+					else{
+						callback({'response':"Invalid Password",'res':false});
+					}
+				}
+				else {
+					callback({'response':"Email Not Registered",'res':false});
+				}
+			});
+		},
+
+		validatePartner: function(email, password, callback){
+			Partner.find({partnerEmail: email}, function(err, partners){
+				if(partners.length!=0){
+					const temp = partners[0].salt;
+					const hash_db = partners[0].password;
+					const id = partners[0].token;
+					const newpass = temp + password;
+					const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
+					if(hash_db == hashed_password){
+						callback({'partner': partners[0], 'res': true});
+					}
+					else{
+						callback({'response':"Invalid Password",'res':false});
+					}
+				}
+				else {
+					callback({'response':"Email Not Registered",'res':false});
+				}
+			});
+		},
+
+		validateUser: function(email, callback) {
+			User.find({email: email}, function(err, users){
+				if(users.length!=0){
 					callback({'user': users[0], 'res': true});
 				}
-				else{
-					callback({'response':"Invalid Password",'res':false});
+				else {
+					Partner.find({partnerEmail: email}, function(err, partners){
+						if(partners.length!=0)
+							callback({'user': partners[0], 'res': true, 'role': 'admin'});
+						else{
+							callback({'response':"Email Not Registered",'res':false});
+						}
+					}					
 				}
-			}
-			else {
-				callback({'response':"Email Not Registered",'res':false});
-			}
-		});
-	},
-	validateUser: function(email, callback) {
-		User.find({email: email}, function(err, users){
-			if(users.length!=0){
-				callback({'user': users[0], 'res': true});
-			}
-			else {
-				callback({'response':"Email Not Registered",'res':false});
-			}
-		});
+			});
+		}
 	}
-}
 
-function genToken(user){
+	function genToken(dbObj){
 	const expires = expiresIn(180); //180 days
 	const token = jwt.sign({
 		exp: expires
@@ -88,7 +145,7 @@ function genToken(user){
 	return {
 		token: token,
 		expires: expires,
-		user: user
+		dbObj: dbObj
 	};
 }
 
