@@ -1,5 +1,8 @@
 const Partner = require('../models/partner').Partner;
 const async = require('async');
+const crypto = require('crypto');
+const rand = require('csprng');
+const mongoose = require('mongoose');
 
 exports.list_partner = function (req, res, next) {
     Partner.find({}).populate('cab').populate('user').sort({ createdAt: -1 }).exec(function (err, partners) {

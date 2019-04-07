@@ -5,20 +5,19 @@ const router = express.Router();
 const user_controller = require('./controllers/userController');
 const cab_controller = require('./controllers/cabController');
 const partner_controller = require('./controllers/partnerController');
-const place_controller = require('./controllers/placeController');
-const sub_place_controller = require('./controllers/subPlaceController');
+const location_controller = require('./controllers/locationController');
 const auth = require('./controllers/auth');
 
 
 //Routes that can be accessed by anyone
-router.post('/signin',auth.signin);
+router.post('/signIn', auth.signin);
 
 
 //Routes that can be accessed only by authenticated users
 //User Routes
 router.get('/api/admin/users', user_controller.user_list);
 //Routes that can be accessed by anyone
-router.post('/signup', user_controller.create_user);
+router.post('/signUp', user_controller.create_user);
 router.get('/api/users/:uID', user_controller.user_detail);
 router.put('/api/users/:uID', user_controller.user_update);
 //Routes-authentication and authorisation both required
@@ -53,7 +52,7 @@ router.delete('/api/admin/partners/:dID', partner_controller.partner_delete);
 
 
 //Location Routes - authentication required
-router.get('/api/locations', location_controller.list_place);
+//router.get('/api/locations', location_controller.list_place);
 //Routes-authentication and authorisation both required
 router.post('/api/admin/locations', location_controller.add_location);
 
