@@ -19,9 +19,9 @@ const auth = {
 		const email = req.body.email;
 		const password = req.body.password;
 		const role = req.body.role;
-		if (typeof (role) != "undefined") {
-			role = "user";
-		}
+		//if (typeof (role) != "undefined") {
+		//	role = "user";
+		//}
 
 		if (email == '' || password == '') {
 			res.status(401);
@@ -91,10 +91,10 @@ const auth = {
 	},
 
 	validatePartner: function (email, password, callback) {
-		Partner.find({ partnerEmail: email }, function (err, partners) {
+		Partner.find({ email: email }, function (err, partners) {
 			if (partners.length != 0) {
 				const temp = partners[0].salt;
-				const hash_db = partners[0].partnerPassword;
+				const hash_db = partners[0].password;
 				const id = partners[0].token;
 				const newpass = temp + password;
 				const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
@@ -102,7 +102,6 @@ const auth = {
 					callback({ 'partner': partners[0], 'res': true });
 				}
 				else {
-					console.log("I am here")
 					callback({ 'response': "Invalid Password", 'res': false });
 				}
 			}
@@ -118,7 +117,7 @@ const auth = {
 				callback({ 'user': users[0], 'res': true });
 			}
 			else {
-				Partner.find({ partnerEmail: email }, function (err, partners) {
+				Partner.find({ email: email }, function (err, partners) {
 					if (partners.length != 0)
 						callback({ 'user': partners[0], 'res': true, 'role': 'admin' });
 					else {
