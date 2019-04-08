@@ -13,30 +13,27 @@ exports.list_partner = function (req, res, next) {
 
 exports.add_partner = function (req, res, next) {
     const partner = new Partner(req.body);
-    const partnerEmail = partner.partnerEmail;
-    const partnerPassword = partner.partnerPassword;
+    const email = partner.email;
+    const password = partner.password;
 
-    if(!(partnerEmail.indexOf("@")+1==partnerEmail.length))
-    {
-        if (partnerPassword.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/) && partnerPassword.length > 4 && partnerPassword.match(/[0-9]/) && partnerPassword.match(/.[!,@,#,$,%,^,&,*,?,_,~]/)) 
-        {
-            const temp =rand(160, 36);
-            const newpass = temp + partnerPassword;
-            const hashed_partnerPassword = crypto.createHash('sha512').update(newpass).digest("hex");
-            partner.partnerPassword = hashed_partnerPassword;
+    if (!(email.indexOf("@") + 1 == email.length)) {
+        if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/) && password.length > 4 && password.match(/[0-9]/) && password.match(/.[!,@,#,$,%,^,&,*,?,_,~]/)) {
+            const temp = rand(160, 36);
+            const newpass = temp + password;
+            const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
+            partner.password = hashed_password;
             partner.salt = temp;
 
-            Partner.find({partnerEmail: partnerEmail}, function(err, partners){
+            Partner.find({ email: email }, function (err, partners) {
                 const len = partners.length;
-                if(len==0){
-                    partner.populate('cab').populate('user').save(function(err,partner){
-                        if(err) return next(err);
+                if (len == 0) {
+                    partner.populate('cab').populate('user').save(function (err, partner) {
+                        if (err) return next(err);
                         res.status(201);
-                        res.json({'response':"Sucessfully Registered", 'res': true});
+                        res.json({ 'response': "Sucessfully Registered", 'res': true });
                     });
                 }
-                else
-                {
+                else {
                     res.status(401);
                     res.json({
                         'response': "Email already registered", 'res': false
@@ -44,19 +41,19 @@ exports.add_partner = function (req, res, next) {
                 }
             });
         }
-        else{
+        else {
             res.status(401);
             res.json({
                 'response': "Password weak", 'res': false
             });
         }
     }
-    else{
+    else {
         res.status(401);
         res.json({
             'response': "Email not valid", 'res': false
         });
-    }   
+    }
 }
 
 exports.partner_detail = function (req, res, next) {
@@ -89,7 +86,7 @@ exports.partner_update = function (req, res, next) {
 };
 
 exports.partner_delete = function (req, res, next) {
-    Partner.remove({_id: req.params.dID}, function (err, partner) {
+    Partner.remove({ _id: req.params.dID }, function (err, partner) {
         if (err) return next(err);
         res.json(partner);
     });
