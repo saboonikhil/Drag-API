@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PartnerSchema = new Schema({
-    partnerName: { type: String, required: true, max: 100, min: 3 },
-    partnerEmail: {type: String, required: true, unique: true, trim: true},
-    partnerContact: { type: String, required: true, unique: true },
-    partnerPassword: {type: String, required: true},
+    name: { type: String, required: true, max: 100, min: 3 },
+    email: {type: String, required: true, unique: true, trim: true},
+    contact: { type: String, required: true, unique: true },
+    alternateContact: {type: String, default: null},
+    password: {type: String, required: true},
     drivers: [{type: Schema.ObjectId, ref: 'User', default: null}],
     cabs: [{type: Schema.ObjectId, ref: 'Cab', default: null}],
     salt: String,
@@ -14,7 +15,7 @@ const PartnerSchema = new Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
-PartnerSchema.virtual('url').get(function () {
+PartnerSchema.virtual('url').get(function () {F
     return '/partner/' + this._id;
 })
 
