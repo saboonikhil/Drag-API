@@ -59,8 +59,12 @@ const auth = {
 					return;
 				}
 				if (dbPartnerObj) {
-					if (dbPartnerObj.res)
-						res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(dbPartnerObj.partner) });
+					if (dbPartnerObj.res) {
+						Partner.findById(dbPartnerObj.partner.id).populate('drivers').populate('cabs').exec(function(err,partner){
+							if (err) return next(err);
+							res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(partner) });
+						});
+					}
 					else {
 						res.json(dbPartnerObj);
 					}
