@@ -31,7 +31,7 @@ router.put('/api/users/:uID/bookCab', user_controller.user_book_cab);
 router.get('/api/cabs', cab_controller.available_cab_list);
 router.get('/api/admin/cabs', cab_controller.all_cab_list);
 //Routes-authentication and authorisation both required
-router.post('/api/admin/cabs', cab_controller.add_cab);
+router.post('/api/admin/:pID/cabs', cab_controller.add_cab);
 
 router.get('/api/cabs/:cID', cab_controller.cab_detail);
 router.put('/cabs/:cID', cab_controller.cab_update);
