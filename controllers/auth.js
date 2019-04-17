@@ -41,8 +41,12 @@ const auth = {
 					return;
 				}
 				if (dbUserObj) {
-					if (dbUserObj.res)
-						res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(dbUserObj.user) });
+					if (dbUserObj.res) {
+						User.findById(dbUserObj.user.id).populate('cabsBooked').exec(function (err, user) {
+							if (err) return next(err);
+							res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(user) });
+						});
+					}
 					else {
 						res.json(dbUserObj);
 					}
@@ -60,7 +64,7 @@ const auth = {
 				}
 				if (dbPartnerObj) {
 					if (dbPartnerObj.res) {
-						Partner.findById(dbPartnerObj.partner.id).populate('drivers').populate('cabs').exec(function(err,partner){
+						Partner.findById(dbPartnerObj.partner.id).populate('drivers').populate('cabs').exec(function (err, partner) {
 							if (err) return next(err);
 							res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(partner) });
 						});
