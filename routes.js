@@ -54,6 +54,7 @@ router.delete('/api/admin/partners/:dID', partner_controller.partner_delete);
 //Location Routes - authentication required
 //router.get('/api/locations', location_controller.list_place);
 //Routes-authentication and authorisation both required
+router.get('/locations', location_controller.list_location);
 router.post('/api/admin/locations', location_controller.add_location);
 
 router.get('/api/locations/:lID', location_controller.location_detail);
