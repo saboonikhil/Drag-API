@@ -43,28 +43,28 @@ exports.all_cab_list = function (req, res, next) {
 }
 
 exports.add_cab = function (req, res, next) {
-    Partner.findById(req.params.pID).populate('drivers').populate('cabs').exec(function(err,partner){
-		if(err) return next(err);
-		if(!partner){
-			err = new Error('Failed to load partner');
-			err.status = 404;
-			return next(err);
+    Partner.findById(req.params.pID).populate('drivers').populate('cabs').exec(function (err, partner) {
+        if (err) return next(err);
+        if (!partner) {
+            err = new Error('Failed to load partner');
+            err.status = 404;
+            return next(err);
         }
         const cab = new Cab(req.body);
         cab.populate('driver').save(function (err, cab) {
             if (err) return next(err);
             res.status(201);
         });
-		partner.cabs.push(cab);
-		partner.save(function(err) {
+        partner.cabs.push(cab);
+        partner.save(function (err) {
             if (err) return next(err);
             res.json(partner)
-		});
-	});
+        });
+    });
 };
 
 exports.cab_detail = function (req, res, next) {
-    Cab.findById(req.params.cID).populate('driver').exec(function (err, result) {
+    Cab.findById(req.params.cID).exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load Cab');
@@ -77,7 +77,7 @@ exports.cab_detail = function (req, res, next) {
 };
 
 exports.cab_update = function (req, res, next) {
-    Cab.findById(req.params.cID).populate('driver').exec(function (err, result) {
+    Cab.findById(req.params.cID).exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load Cab');
@@ -88,6 +88,23 @@ exports.cab_update = function (req, res, next) {
         req.cab.update(req.body, function (err, result) {
             if (err) return next(err);
             res.json(result);
+        });
+    });
+};
+
+exports.cab_add_rider = function (req, res, next) {
+    Cab.findById(req.params.cID).exec(function (err, cab) {
+        if (err) return next(err);
+        if (!cab) {
+            err = new Error('Failed to load Cab');
+            err.status = 404;
+            return next(err);
+        }
+        var rider = { name: req.body.name, contact: req.body.contact };
+        cab.riders.push(rider);
+        cab.save(function (err) {
+            if (err) return next(err);
+            res.json(cab);
         });
     });
 };
