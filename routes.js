@@ -37,6 +37,7 @@ router.get('/api/cabs/:cID', cab_controller.cab_detail);
 router.put('/cabs/:cID', cab_controller.cab_update);
 //Routes-authentication and authorisation both required
 router.delete('/api/admin/cabs/:cID', cab_controller.cab_delete);
+router.put('/api/cabs/:cID/addRider', cab_controller.cab_add_rider);
 
 
 //partner Routes-authentication and authorisation both required
@@ -65,5 +66,3 @@ router.put('/api/admin/locations/:lID/addSubLocation', location_controller.add_s
 router.delete('/api/admin/locations/:lID', location_controller.location_delete);
 
 module.exports = router;
-
-
