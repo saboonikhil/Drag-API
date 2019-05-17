@@ -19,6 +19,7 @@ exports.available_cab_list = function (req, res, next) {
 
     Cab.find({
         collegeName: req.query.collegeName,
+        isAvailable: true,
         $and: [
             { $or: [{ pickup: null }, { pickup: req.query.pickup }] },
             { $or: [{ drop: null }, { drop: req.query.drop }] },
