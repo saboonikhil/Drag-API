@@ -6,6 +6,7 @@ const user_controller = require('./controllers/userController');
 const cab_controller = require('./controllers/cabController');
 const partner_controller = require('./controllers/partnerController');
 const location_controller = require('./controllers/locationController');
+const payment_controller = require('./controllers/paymentController')
 const auth = require('./controllers/auth');
 
 
@@ -22,8 +23,6 @@ router.get('/api/users/:uID', user_controller.user_detail);
 router.put('/api/users/:uID', user_controller.user_update);
 //Routes-authentication and authorisation both required
 router.delete('/api/admin/users/:uID', user_controller.user_delete);
-//Routes that can be accessed only by authenticated users
-router.put('/api/users/:uID/bookCab', user_controller.user_book_cab);
 
 
 //Route that can be accessed by authenticated users
@@ -37,7 +36,7 @@ router.get('/api/cabs/:cID', cab_controller.cab_detail);
 router.put('/cabs/:cID', cab_controller.cab_update);
 //Routes-authentication and authorisation both required
 router.delete('/api/admin/cabs/:cID', cab_controller.cab_delete);
-router.put('/api/cabs/:cID/addRider', cab_controller.cab_add_rider);
+router.get('/api/cabs/:cID/checkCab', cab_controller.cab_check_available);
 
 
 //partner Routes-authentication and authorisation both required
@@ -64,5 +63,9 @@ router.put('/api/admin/locations/:lID', location_controller.location_update);
 router.put('/api/admin/locations/:lID/addSubLocation', location_controller.add_sub_location);
 //Routes-authentication and authorisation both required
 router.delete('/api/admin/locations/:lID', location_controller.location_delete);
+
+router.post('/api/users/:uID/generateChecksum', payment_controller.generate_checksum);
+router.post('/api/users/:uID/createTrip', payment_controller.create_trip);
+router.post('/api/trips/:tID/transactionStatus', payment_controller.transaction_status);
 
 module.exports = router;
