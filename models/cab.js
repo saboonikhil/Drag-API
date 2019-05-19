@@ -12,11 +12,11 @@ const CabSchema = new Schema({
 	endTime: { type: Date, default: null },
 	seats: { type: String, required: true },
 	fare: { type: String, required: true },
-	riders: [{ name: { type: String }, contact: { type: String } }],
-	driverName: { type: String, default: null },
-	driverContact: { type: String, default: null },
 	carName: { type: String, required: true },
 	carNumber: { type: String, default: null },
+	riders: [{ type: Schema.ObjectId, ref: 'User', default: null }],
+	driverName: { type: String, default: null },
+	driverContact: { type: String, default: null },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now }
 });
