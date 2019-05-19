@@ -52,7 +52,7 @@ exports.add_cab = function (req, res, next) {
             return next(err);
         }
         const cab = new Cab(req.body);
-        cab.populate('driver').save(function (err, cab) {
+        cab.populate('riders').save(function (err, cab) {
             if (err) return next(err);
             res.status(201);
         });
@@ -93,7 +93,7 @@ exports.cab_update = function (req, res, next) {
     });
 };
 
-exports.cab_add_rider = function (req, res, next) {
+exports.cab_check_available = function (req, res, next) {
     Cab.findById(req.params.cID).exec(function (err, cab) {
         if (err) return next(err);
         if (!cab) {
@@ -101,18 +101,32 @@ exports.cab_add_rider = function (req, res, next) {
             err.status = 404;
             return next(err);
         }
-        var rider = { name: req.body.name, contact: req.body.contact };
-        cab.riders.push(rider);
-        cab.save(function (err) {
-            if (err) return next(err);
-            res.json(cab);
-        });
+        res.json(cab);
+        if (cab.isAvailable) {
+            cab.update({ isAvailable: false }, function (err, result) {
+                if (err) return next(err);
+            });
+        }
     });
 };
 
 exports.cab_delete = function (req, res, next) {
-    Cab.remove({ _id: req.params.cID }, function (err, cab) {
+    Cab.findById(req.params.cID).exec(function (err, cab) {
         if (err) return next(err);
-        res.json(cab);
-    });
+        if (!cab) {
+            err = new Error('Failed to load Cab');
+            err.status = 404;
+            return next(err);
+        }
+        if (cab.isAvailable) {
+            Cab.remove({ _id: req.params.cID }, function (err, cab) {
+                if (err) return next(err);
+                res.json(cab);
+            });
+        } else {
+            err = new Error('Cab unavailable now');
+            err.status = 404;
+            return next(err);
+        }
+    })
 }
