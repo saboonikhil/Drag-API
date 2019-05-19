@@ -15,7 +15,7 @@ exports.generate_checksum = function (req, res, next) {
 
         var paramarray = {};
         paramarray['MID'] = paytm_config.MID; //Provided by Paytm
-        paramarray['ORDER_ID'] = 'dkdfkkjdljdssdffssds';
+        paramarray['ORDER_ID'] = 'dkdfkkjdljdssdffdsshds';
         paramarray['CUST_ID'] = req.params.uID;  // unique customer identifier
         paramarray['INDUSTRY_TYPE_ID'] = paytm_config.INDUSTRY_TYPE_ID; //Provided by Paytm
         paramarray['CHANNEL_ID'] = paytm_config.CHANNEL_ID; //Provided by Paytm
@@ -28,11 +28,10 @@ exports.generate_checksum = function (req, res, next) {
             res.status(200);
             res.json(paramarray);
         });
-    })
+    });
 }
 
 exports.create_trip = function (req, res, next) {
-    var tripStatus = '';
     Cab.findById(req.body.cabBooked).exec(function (err, cab) {
         if (err) return next(err);
         if (!cab) {
@@ -47,13 +46,14 @@ exports.create_trip = function (req, res, next) {
                 err.status = 404;
                 return next(err);
             }
+
             const response =
             {
                 "TXNID": "20180926111212800110168766100018551",
                 "BANKTXNID": "5583250",
                 "ORDERID": "order1",
                 "TXNAMOUNT": "100.12",
-                "STATUS": "TXN_FAILURE",
+                "STATUS": "TXN_SUCCESS",
                 "TXNTYPE": "SALE",
                 "GATEWAYNAME": "WALLET",
                 "RESPCODE": "01",
@@ -65,7 +65,31 @@ exports.create_trip = function (req, res, next) {
                 "TXNDATE": "2018-09-26 13:50:57.0"
             }
 
+            var tripStatus = '';
+            if (response.STATUS == 'TXN_SUCCESS') {
+                tripStatus = 'Completed';
+                cab.update({
+                    isBooked: true,
+                    pickup: req.body.pickup,
+                    drop: req.body.drop,
+                    startTime: req.body.startTime
+                }, function (err) {
+                    if (err) return next(err);
+                });
+                cab.riders.push(user);
+            }
+            else if (response.STATUS == 'TXN_FAILURE') {
+                tripStatus = 'Failed';
+                cab.update({ isAvailable: true }, function (err) {
+                    if (err) return next(err);
+                });
+            }
+            else if (response.STATUS == 'PENDING') {
+                tripStatus = 'Processing';
+            }
+
             var trip = new Trip({
+                orderId: req.body.orderId,
                 status: tripStatus,
                 cab: cab._id,
                 travelDetails: {
@@ -75,32 +99,21 @@ exports.create_trip = function (req, res, next) {
                     seats: req.body.seats,
                     fare: req.body.fare
                 },
+                checksumHash: req.body.checksumHash,
                 rawData: response
             });
-            trip.save(function (err) { if (err) console.log('Error on saving trip!') });
-            user.trips.push(trip._id);
+            trip.save(function (err) {
+                if (err) return next(err);
+                res.status(201);
+                Trip.populate(trip, { path: "cab" }, function (err, result) {
+                    if (err) return next(err);
+                    res.json(result);
+                });
+            });
+            user.trips.push(trip);
             user.save(function (err) {
                 if (err) return next(err);
             });
-
-            if (response.STATUS == 'TXN_SUCCESS') {
-                tripStatus = 'Completed';
-                cab.update({
-                    isBooked: true,
-                    pickup: req.body.pickup,
-                    drop: req.body.drop,
-                    startTime: req.body.startTime
-                }, function (err, result) {
-                    if (err) return next(err);
-                });
-            } else if (response.STATUS == 'TXN_FAILURE') {
-                tripStatus = 'Failed';
-                cab.update({ isAvailable: true }, function (err, result) {
-                    if (err) return next(err);
-                });
-            } else if (response.STATUS == 'PENDING') {
-                tripStatus = 'Processing';
-            }
         });
     });
 }
