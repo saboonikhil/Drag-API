@@ -1,8 +1,6 @@
 const User = require('../models/user').User;
-const async = require('async');
 const crypto = require('crypto');
 const rand = require('csprng');
-const mongoose = require('mongoose');
 
 exports.user_list = function (req, res, next) {
 	User.find({}).populate('cab').sort({ createdAt: -1 }).exec(function (err, users) {
@@ -57,7 +55,9 @@ exports.create_user = function (req, res, next) {
 };
 
 exports.user_detail = function (req, res, next) {
-	User.findById(req.params.uID).populate('cabsBooked').exec(function (err, result) {
+	User.findById(req.params.uID).populate({
+		path: 'trips', populate: { path: 'cab' }
+	}).exec(function (err, result) {
 		if (err) return next(err);
 		if (!result) {
 			err = new Error('Failed to load user');
@@ -65,12 +65,14 @@ exports.user_detail = function (req, res, next) {
 			return next(err);
 		}
 		req.user = result;
-		res.json(req.user);
-	});
-};
+		res.json(result);
+	})
+}
 
 exports.user_update = function (req, res, next) {
-	User.findById(req.params.uID).populate('cabsBooked').exec(function (err, result) {
+	User.findById(req.params.uID).populate({
+		path: 'trips', populate: { path: 'cab' }
+	}).exec(function (err, result) {
 		if (err) return next(err);
 		if (!result) {
 			err = new Error('Failed to load user');
@@ -81,22 +83,6 @@ exports.user_update = function (req, res, next) {
 		req.user.update(req.body, function (err, result) {
 			if (err) return next(err);
 			res.json(result);
-		});
-	});
-};
-
-exports.user_book_cab = function (req, res, next) {
-	User.findById(req.params.uID).populate('cabsBooked').exec(function (err, user) {
-		if (err) return next(err);
-		if (!user) {
-			err = new Error('Failed to load user');
-			err.status = 404;
-			return next(err);
-		}
-		user.cabsBooked.push(req.body.cabsBooked);
-		user.save(function (err) {
-			if (err) return next(err);
-			res.json(user);
 		});
 	});
 };

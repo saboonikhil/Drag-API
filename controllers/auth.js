@@ -1,16 +1,11 @@
 const express = require('express');
-const router = express.Router();
 const crypto = require('crypto');
-const rand = require('csprng');
-const mongoose = require('mongoose');
-const gravatar = require('gravatar');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user').User;
 const Partner = require('../models/partner').Partner;
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const config = require('../config/secret');
 
+const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
@@ -25,9 +20,7 @@ const auth = {
 
 		if (email == '' || password == '') {
 			res.status(401);
-			res.json({
-				"response": "Invalid Credentials", 'res': false
-			});
+			res.json({ "response": "Invalid Credentials", 'res': false });
 			return;
 		}
 		//Query the database for role, email and password
@@ -35,14 +28,14 @@ const auth = {
 			auth.validate(email, password, function (dbUserObj) {
 				if (!dbUserObj) {
 					res.status(401);
-					res.json({
-						"response": "Invalid Credentials", 'res': false
-					});
+					res.json({ "response": "Invalid Credentials", 'res': false });
 					return;
 				}
 				if (dbUserObj) {
 					if (dbUserObj.res) {
-						User.findById(dbUserObj.user.id).populate('cabsBooked').exec(function (err, user) {
+						User.findById(dbUserObj.user.id).populate({
+							path: 'trips', populate: { path: 'cab' }
+						}).exec(function (err, user) {
 							if (err) return next(err);
 							res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(user) });
 						});
@@ -57,9 +50,7 @@ const auth = {
 			auth.validatePartner(email, password, function (dbPartnerObj) {
 				if (!dbPartnerObj) {
 					res.status(401);
-					res.json({
-						"response": "Invalid Credentials", 'res': false
-					});
+					res.json({ "response": "Invalid Credentials", 'res': false });
 					return;
 				}
 				if (dbPartnerObj) {
