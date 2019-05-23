@@ -1,7 +1,7 @@
 {
-  "name": "ran_api_v01",
+  "name": "drag_api",
   "version": "1.0.0",
-  "description": "ran api package",
+  "description": "drag api package",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/imRishN/RAN_API_v01.git"
+    "url": "git+https://github.com/saboonikhil/Drag_API.git"
   },
-  "author": "Rishab Nahata <rishabnahata07@gmail.com>",
+  "author": "Nikhil Saboo <ns.nikhilsaboo@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/imRishN/RAN_API_v01/issues"
+    "url": "https://github.com/saboonikhil/Drag_API/issues"
   },
-  "homepage": "https://github.com/imRishN/RAN_API_v01#readme",
+  "homepage": "https://github.com/saboonikhil/Drag_API#readme",
   "dependencies": {
     "async": "^2.6.1",
     "bcryptjs": "^2.4.3",
