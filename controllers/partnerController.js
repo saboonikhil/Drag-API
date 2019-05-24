@@ -1,8 +1,6 @@
 const Partner = require('../models/partner').Partner;
-const async = require('async');
 const crypto = require('crypto');
 const rand = require('csprng');
-const mongoose = require('mongoose');
 
 exports.list_partner = function (req, res, next) {
     Partner.find({}).populate('cab').populate('user').sort({ createdAt: -1 }).exec(function (err, partners) {
@@ -17,7 +15,7 @@ exports.add_partner = function (req, res, next) {
     const password = partner.password;
 
     if (!(email.indexOf("@") + 1 == email.length)) {
-        if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/) && password.length > 4 && password.match(/[0-9]/) && password.match(/.[!,@,#,$,%,^,&,*,?,_,~]/)) {
+        if (password.length > 4) {
             const temp = rand(160, 36);
             const newpass = temp + password;
             const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
@@ -27,7 +25,7 @@ exports.add_partner = function (req, res, next) {
             Partner.find({ email: email }, function (err, partners) {
                 const len = partners.length;
                 if (len == 0) {
-                    partner.populate('cab').populate('user').save(function (err, partner) {
+                    partner.save(function (err, partner) {
                         if (err) return next(err);
                         res.status(201);
                         res.json({ 'response': "Sucessfully Registered", 'res': true });
@@ -35,29 +33,23 @@ exports.add_partner = function (req, res, next) {
                 }
                 else {
                     res.status(401);
-                    res.json({
-                        'response': "Email already registered", 'res': false
-                    });
+                    res.json({ 'response': "Email already registered", 'res': false });
                 }
             });
         }
         else {
             res.status(401);
-            res.json({
-                'response': "Password weak", 'res': false
-            });
+            res.json({ 'response': "Password weak", 'res': false });
         }
     }
     else {
         res.status(401);
-        res.json({
-            'response': "Email not valid", 'res': false
-        });
+        res.json({ 'response': "Email not valid", 'res': false });
     }
 }
 
 exports.partner_detail = function (req, res, next) {
-    Partner.findById(req.params.dID).populate('cabs').populate('drivers').exec(function (err, result) {
+    Partner.findById(req.params.dID).populate({ path: 'cabs', populate: { path: 'riders' } }).exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load partner');
@@ -70,7 +62,7 @@ exports.partner_detail = function (req, res, next) {
 };
 
 exports.partner_update = function (req, res, next) {
-    Partner.findById(req.params.dID).populate('cab').populate('user').exec(function (err, result) {
+    Partner.findById(req.params.dID).exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load partner');
