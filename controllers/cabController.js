@@ -27,12 +27,11 @@ exports.available_cab_list = function (req, res, next) {
             { $or: [{ startTime: { $lte: startTimeISOUpperLimit, $gte: startTimeISOLowerLimit } }, { startTime: null }] }
         ],
         seats: { $gte: req.query.seats },
-    }).sort({ createdAt: -1 }).populate('driver').exec(function (err, cabs) {
+    }).sort({ createdAt: -1 }).exec(function (err, cabs) {
         if (err) return next(err);
 
         res.json(cabs);
         res.status(201);
-
     });
 };
 
@@ -44,7 +43,7 @@ exports.all_cab_list = function (req, res, next) {
 }
 
 exports.add_cab = function (req, res, next) {
-    Partner.findById(req.params.pID).populate('drivers').populate('cabs').exec(function (err, partner) {
+    Partner.findById(req.params.pID).populate({ path: 'cabs', populate: { path: 'riders' } }).exec(function (err, partner) {
         if (err) return next(err);
         if (!partner) {
             err = new Error('Failed to load partner');
@@ -52,7 +51,7 @@ exports.add_cab = function (req, res, next) {
             return next(err);
         }
         const cab = new Cab(req.body);
-        cab.populate('riders').save(function (err, cab) {
+        cab.save(function (err, cab) {
             if (err) return next(err);
             res.status(201);
         });
@@ -78,7 +77,7 @@ exports.cab_detail = function (req, res, next) {
 };
 
 exports.cab_update = function (req, res, next) {
-    Cab.findById(req.params.cID).exec(function (err, result) {
+    Cab.findById(req.params.cID).populate('riders').exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load Cab');
