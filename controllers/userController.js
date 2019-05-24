@@ -15,7 +15,7 @@ exports.create_user = function (req, res, next) {
 	const password = user.password;
 
 	if (!(email.indexOf("@") + 1 == email.length)) {
-		if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/) && password.length > 4 && password.match(/[0-9]/) && password.match(/.[!,@,#,$,%,^,&,*,?,_,~]/)) {
+		if (password.length > 4) {
 			const temp = rand(160, 36);
 			const newpass = temp + password;
 			const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
@@ -25,7 +25,7 @@ exports.create_user = function (req, res, next) {
 			User.find({ email: email }, function (err, users) {
 				const len = users.length;
 				if (len == 0) {
-					user.populate('cab').save(function (err, user) {
+					user.save(function (err, user) {
 						if (err) return next(err);
 						res.status(201);
 						res.json({ 'response': "Sucessfully Registered", 'res': true });
@@ -33,31 +33,23 @@ exports.create_user = function (req, res, next) {
 				}
 				else {
 					res.status(401);
-					res.json({
-						'response': "Email already registered", 'res': false
-					});
+					res.json({ 'response': "Email already registered", 'res': false });
 				}
 			});
 		}
 		else {
 			res.status(401);
-			res.json({
-				'response': "Password weak", 'res': false
-			});
+			res.json({ 'response': "Password weak", 'res': false });
 		}
 	}
 	else {
 		res.status(401);
-		res.json({
-			'response': "Email not valid", 'res': false
-		});
+		res.json({ 'response': "Email not valid", 'res': false });
 	}
 };
 
 exports.user_detail = function (req, res, next) {
-	User.findById(req.params.uID).populate({
-		path: 'trips', populate: { path: 'cab' }
-	}).exec(function (err, result) {
+	User.findById(req.params.uID).populate({ path: 'trips', populate: { path: 'cab' } }).exec(function (err, result) {
 		if (err) return next(err);
 		if (!result) {
 			err = new Error('Failed to load user');
@@ -70,9 +62,7 @@ exports.user_detail = function (req, res, next) {
 }
 
 exports.user_update = function (req, res, next) {
-	User.findById(req.params.uID).populate({
-		path: 'trips', populate: { path: 'cab' }
-	}).exec(function (err, result) {
+	User.findById(req.params.uID).populate({ path: 'trips', populate: { path: 'cab' } }).exec(function (err, result) {
 		if (err) return next(err);
 		if (!result) {
 			err = new Error('Failed to load user');
