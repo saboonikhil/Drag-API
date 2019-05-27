@@ -1,5 +1,5 @@
-var paytm_config = require('../paytm/paytm_config').paytm_config;
-var paytm_checksum = require('../paytm/checksum');
+const paytm_config = require('../config/paytm/paytm_config').paytm_config;
+const paytm_checksum = require('../config/paytm/checksum');
 const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
 const Trip = require('../models/trip').Trip;
