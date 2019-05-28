@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 
 const CabSchema = new Schema({
 	isAvailable: { type: Boolean, default: true },
-	isShared: { type: Boolean, default: false },
 	isBooked: { type: Boolean, default: false },
 	collegeName: { type: String, required: true },
 	pickup: { type: String, default: null },

@@ -18,18 +18,17 @@ exports.available_cab_list = function (req, res, next) {
     }
 
     Cab.find({
-        collegeName: req.query.collegeName,
         isAvailable: true,
+        isBooked: false,
+        collegeName: req.query.collegeName,
         $and: [
             { $or: [{ pickup: null }, { pickup: req.query.pickup }] },
             { $or: [{ drop: null }, { drop: req.query.drop }] },
-            { $or: [{ isBooked: false }, { isShared: true }] },
             { $or: [{ startTime: { $lte: startTimeISOUpperLimit, $gte: startTimeISOLowerLimit } }, { startTime: null }] }
         ],
-        seats: { $gte: req.query.seats },
+        seats: req.query.seats,
     }).sort({ createdAt: -1 }).exec(function (err, cabs) {
         if (err) return next(err);
-
         res.json(cabs);
         res.status(201);
     });
