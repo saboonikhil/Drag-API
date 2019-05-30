@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const CabSchema = new Schema({
 	isAvailable: { type: Boolean, default: true },
 	isBooked: { type: Boolean, default: false },
+	tripId: { type: String, default: null },
 	collegeName: { type: String, required: true },
 	pickup: { type: String, default: null },
 	drop: { type: String, default: null },

@@ -42,7 +42,7 @@ exports.all_cab_list = function (req, res, next) {
 }
 
 exports.add_cab = function (req, res, next) {
-    Partner.findById(req.params.pID).populate({ path: 'cabs', populate: { path: 'riders' } }).exec(function (err, partner) {
+    Partner.findById(req.params.pID).exec(function (err, partner) {
         if (err) return next(err);
         if (!partner) {
             err = new Error('Failed to load partner');
@@ -57,7 +57,10 @@ exports.add_cab = function (req, res, next) {
         partner.cabs.push(cab);
         partner.save(function (err) {
             if (err) return next(err);
-            res.json(partner)
+            Partner.populate(partner, { path: 'cabs', populate: { path: 'riders' } }, function (err, result) {
+                if (err) return next(err);
+                res.json(result);
+            });
         });
     });
 };
