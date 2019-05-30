@@ -11,20 +11,45 @@ router.use(bodyParser.json());
 
 const auth = {
 	signin: function (req, res) {
+		var role = req.body.role;
 		const email = req.body.email;
 		const password = req.body.password;
-		const role = req.body.role;
-		//if (typeof (role) != "undefined") {
-		//	role = "user";
-		//}
+
+		if (role == "partner") {
+			if (email == "admin@comingsoon.com")
+				role = "admin";
+			else
+				role = "partner";
+		}
 
 		if (email == '' || password == '') {
 			res.status(401);
 			res.json({ "response": "Invalid Credentials", 'res': false });
 			return;
 		}
+
 		//Query the database for role, email and password
-		if (role == "user") {
+		if (role == "partner") {
+			auth.validatePartner(email, password, function (dbPartnerObj) {
+				if (!dbPartnerObj) {
+					res.status(401);
+					res.json({ "response": "Invalid Credentials", 'res': false });
+					return;
+				}
+				if (dbPartnerObj) {
+					if (dbPartnerObj.res) {
+						Partner.findById(dbPartnerObj.partner.id).populate('drivers').populate('cabs').exec(function (err, partner) {
+							if (err) return next(err);
+							res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(partner) });
+						});
+					}
+					else {
+						res.json(dbPartnerObj);
+					}
+				}
+			});
+		}
+		else {
 			auth.validate(email, password, function (dbUserObj) {
 				if (!dbUserObj) {
 					res.status(401);
@@ -46,27 +71,6 @@ const auth = {
 				}
 			});
 		}
-		else {
-			auth.validatePartner(email, password, function (dbPartnerObj) {
-				if (!dbPartnerObj) {
-					res.status(401);
-					res.json({ "response": "Invalid Credentials", 'res': false });
-					return;
-				}
-				if (dbPartnerObj) {
-					if (dbPartnerObj.res) {
-						Partner.findById(dbPartnerObj.partner.id).populate('drivers').populate('cabs').exec(function (err, partner) {
-							if (err) return next(err);
-							res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(partner) });
-						});
-					}
-					else {
-						res.json(dbPartnerObj);
-					}
-				}
-			});
-		}
-
 	},
 
 	validate: function (email, password, callback) {
