@@ -77,6 +77,32 @@ exports.user_update = function (req, res, next) {
 	});
 };
 
+exports.update_password = function (req, res, next) {
+	const password = req.body.password;
+	User.findById(req.params.uID).populate({ path: 'trips', populate: { path: 'cab' } }).exec(function (err, user) {
+		if (err) return next(err);
+		if (!user) {
+			err = new Error('Failed to load user');
+			err.status = 404;
+			return next(err);
+		}
+
+		if (password.length > 4) {
+			const temp = rand(160, 36);
+			const newpass = temp + password;
+			const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
+			user.update({ password: hashed_password, salt: temp }, function (err) {
+				if (err) return next(err);
+				res.status(200).send({ message: "Password updated successfully" });
+			});
+		}
+		else {
+			res.status(401).send({ message: "Password weak" });
+		}
+	});
+};
+
+
 exports.user_delete = function (req, res, next) {
 	User.remove({ _id: req.params.uID }, function (err, user) {
 		if (err) return next(err);
