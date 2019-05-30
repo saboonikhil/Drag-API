@@ -3,6 +3,7 @@ const paytm_checksum = require('../config/paytm/checksum');
 const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
 const Trip = require('../models/trip').Trip;
+const orderid = require('../config/orderId')('mysecret');
 
 exports.generate_checksum = function (req, res, next) {
     Cab.findById(req.body.cabBooked).exec(function (err, cab) {
@@ -15,7 +16,7 @@ exports.generate_checksum = function (req, res, next) {
 
         var paramarray = {};
         paramarray['MID'] = paytm_config.MID; //Provided by Paytm
-        paramarray['ORDER_ID'] = 'dkdfkkjdljdssdffdsshds';
+        paramarray['ORDER_ID'] = orderid.generate();
         paramarray['CUST_ID'] = req.params.uID;  // unique customer identifier
         paramarray['INDUSTRY_TYPE_ID'] = paytm_config.INDUSTRY_TYPE_ID; //Provided by Paytm
         paramarray['CHANNEL_ID'] = paytm_config.CHANNEL_ID; //Provided by Paytm
@@ -53,7 +54,7 @@ exports.create_trip = function (req, res, next) {
                 "BANKTXNID": "5583250",
                 "ORDERID": "order1",
                 "TXNAMOUNT": "100.12",
-                "STATUS": "TXN_SUCCESS",
+                "STATUS": req.body.status,
                 "TXNTYPE": "SALE",
                 "GATEWAYNAME": "WALLET",
                 "RESPCODE": "01",
@@ -70,6 +71,7 @@ exports.create_trip = function (req, res, next) {
                 tripStatus = 'Completed';
                 cab.update({
                     isBooked: true,
+                    tripId: req.body.orderId,
                     pickup: req.body.pickup,
                     drop: req.body.drop,
                     startTime: req.body.startTime
@@ -89,10 +91,10 @@ exports.create_trip = function (req, res, next) {
             }
 
             var trip = new Trip({
-                orderId: req.body.orderId,
                 status: tripStatus,
                 cab: cab._id,
                 travelDetails: {
+                    tripId: req.body.orderId,
                     pickup: req.body.pickup,
                     drop: req.body.drop,
                     startTime: req.body.startTime,
@@ -116,8 +118,4 @@ exports.create_trip = function (req, res, next) {
             });
         });
     });
-}
-
-exports.transaction_status = function (req, res, next) {
-
 }
