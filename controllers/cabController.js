@@ -78,6 +78,40 @@ exports.cab_detail = function (req, res, next) {
     });
 };
 
+exports.cab_check_available = function (req, res, next) {
+    Cab.findById(req.params.cID).exec(function (err, cab) {
+        if (err) return next(err);
+        if (!cab) {
+            err = new Error('Failed to load Cab');
+            err.status = 404;
+            return next(err);
+        }
+        res.json(cab);
+        if (cab.isAvailable) {
+            cab.update({ isAvailable: false }, function (err) {
+                if (err) return next(err);
+            });
+        }
+    });
+};
+
+exports.cab_make_available = function (req, res, next) {
+    Cab.findById(req.params.cID).exec(function (err, cab) {
+        if (err) return next(err);
+        if (!cab) {
+            err = new Error('Failed to load Cab');
+            err.status = 404;
+            return next(err);
+        }
+        if (!cab.isAvailable) {
+            cab.update({ isAvailable: true }, function (err) {
+                if (err) return next(err);
+                res.status(200).send({ message: "Cab is available now" });
+            });
+        }
+    });
+};
+
 exports.cab_update = function (req, res, next) {
     Cab.findById(req.params.cID).populate('riders').exec(function (err, result) {
         if (err) return next(err);
@@ -91,23 +125,6 @@ exports.cab_update = function (req, res, next) {
             if (err) return next(err);
             res.json(result);
         });
-    });
-};
-
-exports.cab_check_available = function (req, res, next) {
-    Cab.findById(req.params.cID).exec(function (err, cab) {
-        if (err) return next(err);
-        if (!cab) {
-            err = new Error('Failed to load Cab');
-            err.status = 404;
-            return next(err);
-        }
-        res.json(cab);
-        if (cab.isAvailable) {
-            cab.update({ isAvailable: false }, function (err, result) {
-                if (err) return next(err);
-            });
-        }
     });
 };
 
