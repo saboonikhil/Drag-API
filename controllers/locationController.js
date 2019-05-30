@@ -1,5 +1,4 @@
 const Location = require('../models/location').Location;
-const async = require('async');
 
 exports.list_location = function (req, res, next) {
 	Location.find({}).sort({ createdAt: -1 }).exec(function (err, locations) {
