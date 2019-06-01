@@ -19,7 +19,7 @@ exports.available_cab_list = function (req, res, next) {
 
     Cab.find({
         isAvailable: true,
-        isBooked: false,
+        tripId: null,
         collegeName: req.query.collegeName,
         $and: [
             { $or: [{ pickup: null }, { pickup: req.query.pickup }] },
@@ -27,10 +27,9 @@ exports.available_cab_list = function (req, res, next) {
             { $or: [{ startTime: { $lte: startTimeISOUpperLimit, $gte: startTimeISOLowerLimit } }, { startTime: null }] }
         ],
         seats: req.query.seats,
-    }).sort({ createdAt: -1 }).exec(function (err, cabs) {
+    }).sort({ fare: 1 }).exec(function (err, cabs) {
         if (err) return next(err);
-        res.json(cabs);
-        res.status(201);
+        res.status(200).json(cabs);
     });
 };
 
