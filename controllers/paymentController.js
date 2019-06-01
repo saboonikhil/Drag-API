@@ -3,6 +3,7 @@ const paytm_checksum = require('../config/paytm/checksum');
 const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
 const Trip = require('../models/trip').Trip;
+const Transaction = require('../models/transaction').Transaction;
 const orderid = require('../config/orderId')('mysecret');
 
 exports.generate_checksum = function (req, res, next) {
@@ -14,9 +15,11 @@ exports.generate_checksum = function (req, res, next) {
             return next(err);
         }
 
+        const generatedId = orderid.generate();
         var paramarray = {};
+
         paramarray['MID'] = paytm_config.MID; //Provided by Paytm
-        paramarray['ORDER_ID'] = orderid.generate();
+        paramarray['ORDER_ID'] = generatedId;
         paramarray['CUST_ID'] = req.params.uID;  // unique customer identifier
         paramarray['INDUSTRY_TYPE_ID'] = paytm_config.INDUSTRY_TYPE_ID; //Provided by Paytm
         paramarray['CHANNEL_ID'] = paytm_config.CHANNEL_ID; //Provided by Paytm
@@ -26,13 +29,21 @@ exports.generate_checksum = function (req, res, next) {
         paytm_checksum.genchecksum(paramarray, paytm_config.MERCHANT_KEY, function (err, checksum) {
             if (err) return next(err);
             paramarray['CHECKSUMHASH'] = checksum;
-            res.status(200);
-            res.json(paramarray);
+            res.status(200).json(paramarray);
         });
+
+        var transaction = new Transaction({ orderId: generatedId, cab: cab._id });
+        transaction.save(function (err) { if (err) return next(err); });
     });
 }
 
 exports.create_trip = function (req, res, next) {
+    Transaction.find({ orderId: req.body.orderId }).exec(function (err, txns) {
+        Transaction.remove({ _id: txns[0]._id }, function (err) {
+            if (err) return next(err);
+        });
+    });
+
     Cab.findById(req.body.cabBooked).exec(function (err, cab) {
         if (err) return next(err);
         if (!cab) {
@@ -70,7 +81,6 @@ exports.create_trip = function (req, res, next) {
             if (response.STATUS == 'TXN_SUCCESS') {
                 tripStatus = 'Completed';
                 cab.update({
-                    isBooked: true,
                     tripId: req.body.orderId,
                     pickup: req.body.pickup,
                     drop: req.body.drop,
@@ -106,16 +116,14 @@ exports.create_trip = function (req, res, next) {
             });
             trip.save(function (err) {
                 if (err) return next(err);
-                res.status(201);
                 Trip.populate(trip, { path: "cab" }, function (err, result) {
                     if (err) return next(err);
-                    res.json(result);
+                    res.status(201).json(result);
                 });
             });
+
             user.trips.push(trip);
-            user.save(function (err) {
-                if (err) return next(err);
-            });
+            user.save(function (err) { if (err) return next(err); });
         });
     });
 }
