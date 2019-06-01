@@ -38,9 +38,11 @@ const auth = {
 				}
 				if (dbPartnerObj) {
 					if (dbPartnerObj.res) {
-						Partner.findById(dbPartnerObj.partner.id).populate('drivers').populate('cabs').exec(function (err, partner) {
+						Partner.findById(dbPartnerObj.partner.id).populate({
+							path: 'cabs', populate: { path: 'riders' }
+						}).exec(function (err, partner) {
 							if (err) return next(err);
-							res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(partner) });
+							res.json({ 'response': "Logged In Successfully", 'res': true, 'token': genToken(partner) });
 						});
 					}
 					else {
@@ -62,7 +64,7 @@ const auth = {
 							path: 'trips', populate: { path: 'cab' }
 						}).exec(function (err, user) {
 							if (err) return next(err);
-							res.json({ 'response': "Signed In Successfully", 'res': true, 'token': genToken(user) });
+							res.json({ 'response': "Logged In Successfully", 'res': true, 'token': genToken(user) });
 						});
 					}
 					else {

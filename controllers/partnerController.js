@@ -14,37 +14,42 @@ exports.add_partner = function (req, res, next) {
     const email = partner.email;
     const password = partner.password;
 
-    if (!(email.indexOf("@") + 1 == email.length)) {
-        if (password.length > 4) {
-            const temp = rand(160, 36);
-            const newpass = temp + password;
-            const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
-            partner.password = hashed_password;
-            partner.salt = temp;
+    if (req.query.x_key == "admin@comingsoon.com") {
+        if (!(email.indexOf("@") + 1 == email.length)) {
+            if (password.length > 4) {
+                const temp = rand(160, 36);
+                const newpass = temp + password;
+                const hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
+                partner.password = hashed_password;
+                partner.salt = temp;
 
-            Partner.find({ email: email }, function (err, partners) {
-                const len = partners.length;
-                if (len == 0) {
-                    partner.save(function (err, partner) {
-                        if (err) return next(err);
-                        res.status(201);
-                        res.json({ 'response': "Sucessfully Registered", 'res': true });
-                    });
-                }
-                else {
-                    res.status(401);
-                    res.json({ 'response': "Email already registered", 'res': false });
-                }
-            });
+                Partner.find({ email: email }, function (err, partners) {
+                    const len = partners.length;
+                    if (len == 0) {
+                        partner.save(function (err, partner) {
+                            if (err) return next(err);
+                            res.status(201);
+                            res.json({ 'response': "Sucessfully Registered", 'res': true });
+                        });
+                    }
+                    else {
+                        res.status(401);
+                        res.json({ 'response': "Email already registered", 'res': false });
+                    }
+                });
+            }
+            else {
+                res.status(401);
+                res.json({ 'response': "Password weak", 'res': false });
+            }
         }
         else {
             res.status(401);
-            res.json({ 'response': "Password weak", 'res': false });
+            res.json({ 'response': "Email not valid", 'res': false });
         }
     }
     else {
-        res.status(401);
-        res.json({ 'response': "Email not valid", 'res': false });
+        res.status(451).json({ "message": "You dragged yourself to a wrong place. Drag again maybe?" });
     }
 }
 
