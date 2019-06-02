@@ -1,5 +1,6 @@
 const Cab = require('../models/cab').Cab;
 const Partner = require('../models/partner').Partner;
+const Transaction = require('../models/transaction').Transaction;
 
 exports.available_cab_list = function (req, res, next) {
 
@@ -95,6 +96,12 @@ exports.cab_check_available = function (req, res, next) {
 };
 
 exports.cab_make_available = function (req, res, next) {
+    Transaction.find({ orderId: req.body.orderId }).exec(function (err, txns) {
+        Transaction.remove({ _id: txns[0]._id }, function (err) {
+            if (err) return next(err);
+        });
+    });
+
     Cab.findById(req.params.cID).exec(function (err, cab) {
         if (err) return next(err);
         if (!cab) {
