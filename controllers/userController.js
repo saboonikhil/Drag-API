@@ -1,6 +1,8 @@
 const User = require('../models/user').User;
+const Feedback = require('../models/feedback').Feedback;
 const crypto = require('crypto');
 const rand = require('csprng');
+const orderid = require('../config/orderId')('mysecret');
 
 exports.user_list = function (req, res, next) {
 	User.find({}).populate('cab').sort({ createdAt: -1 }).exec(function (err, users) {
@@ -39,7 +41,7 @@ exports.create_user = function (req, res, next) {
 		}
 		else {
 			res.status(401);
-			res.json({ 'response': "Password weak", 'res': false });
+			res.json({ 'response': "Password must be of minimum length 5 characters", 'res': false });
 		}
 	}
 	else {
@@ -102,6 +104,20 @@ exports.update_password = function (req, res, next) {
 	});
 };
 
+exports.send_feedback = function (req, res, next) {
+	User.findById(req.params.uID).exec(function (err, user) {
+		if (err) return next(err);
+		if (!user) {
+			err = new Error('Failed to load user');
+			err.status = 404;
+			return next(err);
+		}
+
+		var feedback = new Feedback({ user: user._id, message: req.body.message });
+		feedback.save(function (err) { if (err) return next(err); });
+		res.status(200).send({ message: "Feedback recorded successfully" });
+	});
+};
 
 exports.user_delete = function (req, res, next) {
 	User.remove({ _id: req.params.uID }, function (err, user) {
