@@ -3,7 +3,6 @@ const Partner = require('../models/partner').Partner;
 const Transaction = require('../models/transaction').Transaction;
 
 exports.available_cab_list = function (req, res, next) {
-
     const startTime = req.query.startTime;
 
     const startTimeUpperLimit = new Date(startTime);
@@ -28,7 +27,7 @@ exports.available_cab_list = function (req, res, next) {
             { $or: [{ startTime: { $lte: startTimeISOUpperLimit, $gte: startTimeISOLowerLimit } }, { startTime: null }] }
         ],
         seats: req.query.seats,
-    }).sort({ fare: 1 }).exec(function (err, cabs) {
+    }).sort({ startTime: 1 }).exec(function (err, cabs) {
         if (err) return next(err);
         res.status(200).json(cabs);
     });
@@ -97,9 +96,11 @@ exports.cab_check_available = function (req, res, next) {
 
 exports.cab_make_available = function (req, res, next) {
     Transaction.find({ orderId: req.body.orderId }).exec(function (err, txns) {
-        Transaction.remove({ _id: txns[0]._id }, function (err) {
-            if (err) return next(err);
-        });
+        if (txns.length == 1)
+            Transaction.remove({ _id: txns[0]._id }, function (err) {
+                if (err)
+                    console.log('Error while removing transaction: ' + err);
+            });
     });
 
     Cab.findById(req.params.cID).exec(function (err, cab) {
