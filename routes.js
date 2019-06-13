@@ -5,7 +5,9 @@ const user_controller = require('./controllers/userController');
 const cab_controller = require('./controllers/cabController');
 const partner_controller = require('./controllers/partnerController');
 const location_controller = require('./controllers/locationController');
-const payment_controller = require('./controllers/paymentController')
+const payment_controller = require('./controllers/paymentController');
+const ride_controller = require('./controllers/rideController');
+
 
 
 router.post('/signIn', auth.signin); //Routes that can be accessed by anyone
@@ -16,6 +18,7 @@ router.get('/api/admin/users', user_controller.user_list); //Routes that can be 
 router.get('/api/users/:uID', user_controller.user_detail);
 router.put('/api/users/:uID', user_controller.user_update);
 router.put('/api/users/:uID/updatePassword', user_controller.update_password);
+router.put('/api/users/:uID/sendFeedback', user_controller.send_feedback);
 router.delete('/api/admin/users/:uID', user_controller.user_delete); //Routes-authentication and authorisation both required
 
 
@@ -45,5 +48,10 @@ router.delete('/api/admin/locations/:lID', location_controller.location_delete);
 
 router.post('/api/users/:uID/generateChecksum', payment_controller.generate_checksum);
 router.post('/api/users/:uID/createTrip', payment_controller.create_trip);
+
+
+router.get('/api/rides', ride_controller.user_ride_list);
+router.get('/api/admin/rides', ride_controller.partner_ride_list);
+router.put('/api/users/:uID/joinRide', ride_controller.user_join_ride);
 
 module.exports = router;

@@ -40,7 +40,7 @@ exports.add_partner = function (req, res, next) {
             }
             else {
                 res.status(401);
-                res.json({ 'response': "Password weak", 'res': false });
+                res.json({ 'response': "Password must be of minimum length 5 characters", 'res': false });
             }
         }
         else {
