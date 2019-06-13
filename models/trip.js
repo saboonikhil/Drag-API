@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const TripSchema = new Schema({
-    status: { type: String },
+    status: { type: String, default: null },
     cab: { type: Schema.ObjectId, ref: 'Cab', default: null },
     travelDetails: {
         tripId: { type: String }, pickup: { type: String }, drop: { type: String },
-        startTime: { type: Date }, seats: { type: String }, fare: { type: String }
+        startTime: { type: Date }, seats: { type: String }, fare: { type: String, default: null }
     },
-    checksumHash: { type: String, required: true },
+    checksumHash: { type: String, default: null },
     rawData: { type: JSON, default: null },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
