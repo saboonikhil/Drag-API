@@ -18,7 +18,7 @@ const options = {
   bufferMaxEntries: 0
 };
 
-mongoose.connect('mongodb://localhost:27017/Drag');
+mongoose.connect('mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/Drag');
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
