@@ -36,8 +36,7 @@ exports.partner_ride_list = function (req, res, next) {
     Cab.find({
         isAvailable: false,
         carName: null,
-        collegeName: null,
-        seats: 0,
+        collegeName: null
     }).sort({ startTime: 1 }).populate('riders').exec(function (err, cabs) {
         if (err) return next(err);
         res.status(200).json(cabs);
