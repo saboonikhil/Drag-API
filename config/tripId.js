@@ -3,7 +3,7 @@ const fpe = require('node-fpe');
 module.exports = function (scrambler = 'password') {
   const cipher = fpe({ password: scrambler });
 
-  function generateOrderId(date) {
+  function generateTripId(date) {
     let now = date
       ? new Date(date).getTime().toString()
       : Date.now().toString();
@@ -15,7 +15,7 @@ module.exports = function (scrambler = 'password') {
     }
     now = cipher.encrypt(now);
 
-    return [now.slice(0, 4), now.slice(10, 14)].join('');  // xxxxxxxx format
+    return [now.slice(4, 6), now.slice(8, 10)].join('');  // xxxxxxxx format
   }
 
   function getTime(id) {
@@ -26,7 +26,7 @@ module.exports = function (scrambler = 'password') {
     return res;
   }
 
-  return { generateOrderId, getTime };
+  return { generateTripId, getTime };
 };
 
 function randomNumber(length) {
