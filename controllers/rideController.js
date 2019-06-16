@@ -1,17 +1,29 @@
 const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
 const Trip = require('../models/trip').Trip;
-const orderid = require('../config/orderId')('mysecret');
+const uniqueId = require('../config/tripId')('mysecret');
+
+exports.add_ride = function (req, res, next) {
+    if (req.query.x_key == "admin@comingsoon.com") {
+        const ride = new Cab(req.body);
+        ride.save(function (err, ride) {
+            if (err) return next(err);
+            res.status(201).json(ride);
+        });
+    } else {
+        res.status(451).json({ "message": "You dragged yourself to a wrong place. Drag again maybe?" });
+    }
+};
 
 exports.user_ride_list = function (req, res, next) {
     const startTime = req.query.startTime;
 
     const startTimeUpperLimit = new Date(startTime);
-    startTimeUpperLimit.setHours(startTimeUpperLimit.getHours() + 6); // Considering that time fluctuation is allowed for +12hours
+    startTimeUpperLimit.setHours(startTimeUpperLimit.getHours() + 6);
     const startTimeISOUpperLimit = startTimeUpperLimit.toISOString();
 
     const startTimeLowerLimit = new Date(startTime);
-    startTimeLowerLimit.setHours(startTimeLowerLimit.getHours() - 6); // Considering that time fluctuation is allowed for -12hours
+    startTimeLowerLimit.setHours(startTimeLowerLimit.getHours() - 6);
     var startTimeISOLowerLimit = startTimeLowerLimit.toISOString();
 
     if ((new Date() - startTimeLowerLimit) > 0) {
@@ -74,24 +86,27 @@ exports.user_join_ride = function (req, res, next) {
                 }
 
                 if (proceed == 'true') {
-                    if (seatsLeft == 0) {
-                        ride.update({ isAvailable: false, seats: seatsLeft }, function (err) {
-                            if (err) return next(err);
-                        });
-                        ride.riders.push(user);
-                    }
-                    else {
-                        ride.update({ seats: seatsLeft }, function (err) {
-                            if (err) return next(err);
-                        });
-                        ride.riders.push(user);
-                    }
+                    const tripId = uniqueId.generateTripId();
+                    var seatsEmpty = true;
+                    const updatedTripId;
+                    if (seatsLeft == 0)
+                        seatsEmpty = false;
+
+                    if (ride.tripId != null)
+                        updatedTripId = ride.tripId + '-' + tripId;
+                    else
+                        updatedTripId = tripId;
+
+                    ride.update({ isAvailable: seatsEmpty, tripId: updatedTripId, seats: seatsLeft }, function (err) {
+                        if (err) return next(err);
+                    });
+                    ride.riders.push(user);
 
                     var trip = new Trip({
                         status: "Sharing",
                         cab: ride._id,
                         travelDetails: {
-                            tripId: orderid.generate(),
+                            tripId: tripId,
                             pickup: ride.pickup,
                             drop: ride.drop,
                             startTime: ride.startTime,
