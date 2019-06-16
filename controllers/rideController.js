@@ -88,7 +88,7 @@ exports.user_join_ride = function (req, res, next) {
                 if (proceed == 'true') {
                     const tripId = uniqueId.generateTripId();
                     var seatsEmpty = true;
-                    const updatedTripId;
+                    var updatedTripId;
                     if (seatsLeft == 0)
                         seatsEmpty = false;
 
