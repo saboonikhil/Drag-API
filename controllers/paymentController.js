@@ -4,7 +4,7 @@ const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
 const Trip = require('../models/trip').Trip;
 const Transaction = require('../models/transaction').Transaction;
-const orderid = require('../config/orderId')('mysecret');
+const uniqueId = require('../config/orderId')('mysecret');
 
 exports.generate_checksum = function (req, res, next) {
     Cab.findById(req.body.cabBooked).exec(function (err, cab) {
@@ -15,11 +15,11 @@ exports.generate_checksum = function (req, res, next) {
             return next(err);
         }
 
-        const generatedId = orderid.generate();
+        const orderId = uniqueId.generateOrderId();
         var paramarray = {};
 
         paramarray['MID'] = paytm_config.MID; //Provided by Paytm
-        paramarray['ORDER_ID'] = generatedId;
+        paramarray['ORDER_ID'] = orderId;
         paramarray['CUST_ID'] = req.params.uID;  // unique customer identifier
         paramarray['INDUSTRY_TYPE_ID'] = paytm_config.INDUSTRY_TYPE_ID; //Provided by Paytm
         paramarray['CHANNEL_ID'] = paytm_config.CHANNEL_ID; //Provided by Paytm
@@ -32,7 +32,7 @@ exports.generate_checksum = function (req, res, next) {
             res.status(200).json(paramarray);
         });
 
-        var transaction = new Transaction({ orderId: generatedId, cab: cab._id });
+        var transaction = new Transaction({ orderId: orderId, cab: cab._id });
         transaction.save(function (err) { if (err) return next(err); });
     });
 }
