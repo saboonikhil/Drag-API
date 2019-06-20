@@ -8,7 +8,6 @@ const TripSchema = new Schema({
         tripId: { type: String }, pickup: { type: String }, drop: { type: String },
         startTime: { type: Date }, seats: { type: String }, fare: { type: String, default: null }
     },
-    checksumHash: { type: String, default: null },
     rawData: { type: JSON, default: null },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
