@@ -1,3 +1,4 @@
+const https = require('https');
 const paytm_config = require('../config/paytm/paytm_config').paytm_config;
 const paytm_checksum = require('../config/paytm/checksum');
 const Cab = require('../models/cab').Cab;
@@ -59,71 +60,86 @@ exports.create_trip = function (req, res, next) {
                 return next(err);
             }
 
-            const response =
-            {
-                "TXNID": "20180926111212800110168766100018551",
-                "BANKTXNID": "5583250",
-                "ORDERID": "order1",
-                "TXNAMOUNT": "100.12",
-                "STATUS": req.body.status,
-                "TXNTYPE": "SALE",
-                "GATEWAYNAME": "WALLET",
-                "RESPCODE": "01",
-                "RESPMSG": "Txn Success",
-                "BANKNAME": "WALLET",
-                "MID": "rxazcv89315285244163",
-                "PAYMENTMODE": "PPI",
-                "REFUNDAMT": "0.00",
-                "TXNDATE": "2018-09-26 13:50:57.0"
-            }
+            var paytmParams = {};
+            paytmParams["MID"] = paytm_config.MID;
+            paytmParams["ORDERID"] = req.body.orderId;
 
-            var tripStatus = '';
-            if (response.STATUS == 'TXN_SUCCESS') {
-                tripStatus = 'Completed';
-                cab.update({
-                    tripId: req.body.orderId,
-                    pickup: req.body.pickup,
-                    drop: req.body.drop,
-                    startTime: req.body.startTime
-                }, function (err) {
-                    if (err) return next(err);
-                });
-                cab.riders.push(user);
-            }
-            else if (response.STATUS == 'TXN_FAILURE') {
-                tripStatus = 'Failed';
-                cab.update({ isAvailable: true }, function (err) {
-                    if (err) return next(err);
-                });
-            }
-            else if (response.STATUS == 'PENDING') {
-                tripStatus = 'Processing';
-            }
+            paytm_checksum.genchecksum(paytmParams, paytm_config.MERCHANT_KEY, function (err, checksum) {
+                paytmParams["CHECKSUMHASH"] = checksum;
+                var post_data = JSON.stringify(paytmParams);
 
-            var trip = new Trip({
-                status: tripStatus,
-                cab: cab._id,
-                travelDetails: {
-                    tripId: req.body.orderId,
-                    pickup: req.body.pickup,
-                    drop: req.body.drop,
-                    startTime: req.body.startTime,
-                    seats: req.body.seats,
-                    fare: req.body.fare
-                },
-                checksumHash: req.body.checksumHash,
-                rawData: response
+                var options = {
+                    //hostname: 'securegw-stage.paytm.in',
+                    hostname: 'securegw.paytm.in',
+                    port: 443,
+                    path: '/order/status',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Content-Length': post_data.length
+                    }
+                };
+
+                var response = {};
+                var post_req = https.request(options, function (post_res) {
+                    post_res.on('data', function (chunk) {
+                        response = JSON.parse(chunk);
+                    });
+
+                    post_res.on('end', function () {
+
+                        var tripStatus = '';
+                        if (response.STATUS == "TXN_SUCCESS") {
+                            tripStatus = 'Completed';
+                            cab.update({
+                                tripId: req.body.orderId,
+                                pickup: req.body.pickup,
+                                drop: req.body.drop,
+                                startTime: req.body.startTime
+                            }, function (err) {
+                                if (err) return next(err);
+                            });
+                            cab.riders.push(user);
+                        }
+                        else if (response.STATUS == "TXN_FAILURE") {
+                            tripStatus = 'Failed';
+                            cab.update({ isAvailable: true }, function (err) {
+                                if (err) return next(err);
+                            });
+                        }
+                        else if (response.STATUS == "PENDING") {
+                            tripStatus = 'Processing';
+                        }
+
+                        var trip = new Trip({
+                            status: tripStatus,
+                            cab: cab._id,
+                            travelDetails: {
+                                tripId: req.body.orderId,
+                                pickup: req.body.pickup,
+                                drop: req.body.drop,
+                                startTime: req.body.startTime,
+                                seats: req.body.seats,
+                                fare: req.body.fare
+                            },
+                            rawData: response
+                        });
+                        trip.save(function (err) {
+                            if (err) return next(err);
+                            Trip.populate(trip, { path: "cab" }, function (err, result) {
+                                if (err) return next(err);
+                                res.status(201).json(result);
+                            });
+                        });
+
+                        user.trips.push(trip);
+                        user.save(function (err) { if (err) return next(err); });
+                    });
+                });
+
+                post_req.write(post_data);
+                post_req.end();
             });
-            trip.save(function (err) {
-                if (err) return next(err);
-                Trip.populate(trip, { path: "cab" }, function (err, result) {
-                    if (err) return next(err);
-                    res.status(201).json(result);
-                });
-            });
-
-            user.trips.push(trip);
-            user.save(function (err) { if (err) return next(err); });
         });
     });
 }

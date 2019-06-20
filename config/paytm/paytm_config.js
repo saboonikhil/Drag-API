@@ -1,9 +1,9 @@
 module.exports = {
   paytm_config: {
-    MID: 'RANSta79669639415222',
-    WEBSITE: 'APPSTAGING',
+    MID: 'Eaapda73854143490344',
+    WEBSITE: 'DEFAULT',
     CHANNEL_ID: 'WAP',
     INDUSTRY_TYPE_ID: 'Retail',
-    MERCHANT_KEY: 'l849yYF1lfcI#UCh'
+    MERCHANT_KEY: 'xmlwFMXme&&_!iCb'
   }
 }
