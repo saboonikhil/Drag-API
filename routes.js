@@ -18,6 +18,7 @@ router.post('/signUp', user_controller.create_user); //Routes that can be access
 router.get('/api/users/:uID', user_controller.user_detail);
 router.put('/api/users/:uID', user_controller.user_update);
 router.put('/api/users/:uID/updatePassword', user_controller.update_password);
+router.get('/api/notifications', user_controller.notification_list);
 router.put('/api/users/:uID/sendFeedback', user_controller.send_feedback);
 //router.delete('/api/admin/users/:uID', user_controller.user_delete); //Routes-authentication and authorisation both required
 
