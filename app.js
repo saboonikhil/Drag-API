@@ -1,22 +1,19 @@
-const express = require('express');
-const app = express();
 const jsonParser = require('body-parser').json;
 const routes = require('./routes');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-const port = process.env.port || 8080;
-const https = require('https');
 const connect = require('connect');
+var https = require('https');
+var fs = require('fs');
+var dragkey = fs.readFileSync('encryption/drag_key.pem');
+var dragcert = fs.readFileSync('encryption/drag_cert.crt')
 
-const options = {
-  useMongoClient: true,
-  autoIndex: false, // Don't build indexes
-  reconnectTries: 100, // Never stop trying to reconnect
-  reconnectInterval: 500, // Reconnect every 500ms
-  poolSize: 10, // Maintain up to 10 socket connections
-  // If not connected, return errors immediately rather than waiting for reconnect
-  bufferMaxEntries: 0
-};
+var options = { key: dragkey, cert: dragcert };
+var express = require('express');
+var app = express();
+
+var httpsServer = https.createServer(options, app);
+
 
 mongoose.connect('mongodb+srv://drag_api:aTL4E9jasQWAwCc3@dragcluster-qgxyv.mongodb.net/Drag');
 mongoose.Promise = global.Promise;
@@ -28,6 +25,7 @@ db.on('error', err => {
 db.once('open', () => {
   console.log('DB connected successfully!');
 });
+
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -64,6 +62,6 @@ app.use(function (err, req, res, next) {
   });
 });
 
-app.listen(port, () => {
-  console.log(`Web server listening on: ${port}`);
+httpsServer.listen(8443, () => {
+  console.log(`Web server listening on: ${8443}`);
 });
