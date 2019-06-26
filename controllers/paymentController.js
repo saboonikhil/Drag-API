@@ -8,33 +8,43 @@ const Transaction = require('../models/transaction').Transaction;
 const uniqueId = require('../config/orderId')('mysecret');
 
 exports.generate_checksum = function (req, res, next) {
-    Cab.findById(req.body.cabBooked).exec(function (err, cab) {
+    User.findById(req.params.uID).exec(function (err, user) {
         if (err) return next(err);
-        if (!cab) {
-            err = new Error('Failed to load Cab');
+        if (!user) {
+            err = new Error('Failed to load User');
             err.status = 404;
             return next(err);
         }
-
-        const orderId = uniqueId.generateOrderId();
-        var paramarray = {};
-
-        paramarray['MID'] = paytm_config.MID; //Provided by Paytm
-        paramarray['ORDER_ID'] = orderId;
-        paramarray['CUST_ID'] = req.params.uID;  // unique customer identifier
-        paramarray['INDUSTRY_TYPE_ID'] = paytm_config.INDUSTRY_TYPE_ID; //Provided by Paytm
-        paramarray['CHANNEL_ID'] = paytm_config.CHANNEL_ID; //Provided by Paytm
-        paramarray['TXN_AMOUNT'] = cab.fare; // transaction amount
-        paramarray['WEBSITE'] = paytm_config.WEBSITE; //Provided by Paytm
-        paramarray['CALLBACK_URL'] = 'https://securegw-stage.paytm.in/theia/paytmCallback';//Provided by Paytm
-        paytm_checksum.genchecksum(paramarray, paytm_config.MERCHANT_KEY, function (err, checksum) {
+        Cab.findById(req.body.cabBooked).exec(function (err, cab) {
             if (err) return next(err);
-            paramarray['CHECKSUMHASH'] = checksum;
-            res.status(200).json(paramarray);
-        });
+            if (!cab) {
+                err = new Error('Failed to load Cab');
+                err.status = 404;
+                return next(err);
+            }
 
-        var transaction = new Transaction({ orderId: orderId, cab: cab._id });
-        transaction.save(function (err) { if (err) return next(err); });
+            const orderId = uniqueId.generateOrderId();
+            var paramarray = {};
+
+            paramarray['MID'] = paytm_config.MID; //Provided by Paytm
+            paramarray['ORDER_ID'] = orderId;
+            paramarray['CUST_ID'] = user._id;
+            paramarray['MOBILE_NO'] = user.contact;
+            paramarray['EMAIL'] = user.email;
+            paramarray['INDUSTRY_TYPE_ID'] = paytm_config.INDUSTRY_TYPE_ID; //Provided by Paytm
+            paramarray['CHANNEL_ID'] = paytm_config.CHANNEL_ID; //Provided by Paytm
+            paramarray['TXN_AMOUNT'] = cab.fare; // transaction amount
+            paramarray['WEBSITE'] = paytm_config.WEBSITE; //Provided by Paytm
+            paramarray['CALLBACK_URL'] = 'https://securegw-stage.paytm.in/theia/paytmCallback';//Provided by Paytm
+            paytm_checksum.genchecksum(paramarray, paytm_config.MERCHANT_KEY, function (err, checksum) {
+                if (err) return next(err);
+                paramarray['CHECKSUMHASH'] = checksum;
+                res.status(200).json(paramarray);
+            });
+
+            var transaction = new Transaction({ orderId: orderId, cab: cab._id });
+            transaction.save(function (err) { if (err) return next(err); });
+        });
     });
 }
 
