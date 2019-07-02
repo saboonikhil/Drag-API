@@ -51,7 +51,7 @@ router.post('/api/users/:uID/generateChecksum', payment_controller.generate_chec
 router.post('/api/users/:uID/createTrip', payment_controller.create_trip);
 
 
-router.post('/api/admin/rides', ride_controller.add_ride);
+router.post('/api/rides', ride_controller.add_ride);
 router.get('/api/rides', ride_controller.user_ride_list);
 router.get('/api/admin/rides', ride_controller.partner_ride_list);
 router.put('/api/users/:uID/joinRide', ride_controller.user_join_ride);
