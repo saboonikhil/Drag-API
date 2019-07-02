@@ -4,12 +4,12 @@ const Feedback = require('../models/feedback').Feedback;
 const crypto = require('crypto');
 const rand = require('csprng');
 
-exports.user_list = function (req, res, next) {
-	User.find({}).populate('cab').sort({ createdAt: -1 }).exec(function (err, users) {
-		if (err) return next(err);
-		res.json({ 'users': users });
-	});
-};
+// exports.user_list = function (req, res, next) {
+// 	User.find({}).populate('cab').sort({ createdAt: -1 }).exec(function (err, users) {
+// 		if (err) return next(err);
+// 		res.json({ 'users': users });
+// 	});
+// };
 
 exports.create_user = function (req, res, next) {
 	const user = new User(req.body);
@@ -126,9 +126,9 @@ exports.send_feedback = function (req, res, next) {
 	});
 };
 
-exports.user_delete = function (req, res, next) {
-	User.remove({ _id: req.params.uID }, function (err, user) {
-		if (err) return next(err);
-		res.json(user);
-	});
-};
+// exports.user_delete = function (req, res, next) {
+// 	User.remove({ _id: req.params.uID }, function (err, user) {
+// 		if (err) return next(err);
+// 		res.json(user);
+// 	});
+// };
