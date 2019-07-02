@@ -10,8 +10,21 @@ exports.add_ride = function (req, res, next) {
             if (err) return next(err);
             res.status(201).json(ride);
         });
-    } else {
-        res.status(451).json({ "message": "You dragged yourself to a wrong place. Drag again maybe?" });
+    }
+    else {
+        var ride = new Cab({
+            isAvailable: false,
+            tripId: req.query.x_key,
+            city: req.body.city,
+            pickup: req.body.pickup,
+            drop: req.body.drop,
+            startTime: req.body.startTime,
+            seats: req.body.seats
+        });
+        ride.save(function (err, ride) {
+            if (err) return next(err);
+            res.status(201).json(ride);
+        });
     }
 };
 
@@ -33,7 +46,7 @@ exports.user_ride_list = function (req, res, next) {
     Cab.find({
         isAvailable: true,
         carName: null,
-        collegeName: null,
+        city: null,
         pickup: req.query.pickup,
         drop: req.query.drop,
         startTime: { $lte: startTimeISOUpperLimit, $gte: startTimeISOLowerLimit },
@@ -45,14 +58,25 @@ exports.user_ride_list = function (req, res, next) {
 };
 
 exports.partner_ride_list = function (req, res, next) {
-    Cab.find({
-        isAvailable: false,
-        carName: null,
-        collegeName: null
-    }).sort({ startTime: 1 }).populate('riders').exec(function (err, cabs) {
-        if (err) return next(err);
-        res.status(200).json(cabs);
-    });
+    if (req.query.x_key != "admin@comingsoon.com") {
+        Cab.find({
+            isAvailable: false,
+            carName: null,
+            city: null
+        }).sort({ startTime: 1 }).populate('riders').exec(function (err, cabs) {
+            if (err) return next(err);
+            res.status(200).json(cabs);
+        });
+    }
+    else {
+        Cab.find({
+            isAvailable: false,
+            carName: null
+        }).sort({ startTime: 1 }).populate('riders').exec(function (err, cabs) {
+            if (err) return next(err);
+            res.status(200).json(cabs);
+        });
+    }
 };
 
 exports.user_join_ride = function (req, res, next) {

@@ -20,7 +20,7 @@ exports.available_cab_list = function (req, res, next) {
     Cab.find({
         isAvailable: true,
         tripId: null,
-        collegeName: req.query.collegeName,
+        city: req.query.city,
         $and: [
             { $or: [{ pickup: null }, { pickup: req.query.pickup }] },
             { $or: [{ drop: null }, { drop: req.query.drop }] },
@@ -33,12 +33,12 @@ exports.available_cab_list = function (req, res, next) {
     });
 };
 
-exports.all_cab_list = function (req, res, next) {
-    Cab.find({}).populate('partner').sort({ createdAt: -1 }).exec(function (err, cabs) {
-        if (err) return next(err);
-        res.json(cabs);
-    });
-}
+// exports.all_cab_list = function (req, res, next) {
+//     Cab.find({}).populate('partner').sort({ createdAt: -1 }).exec(function (err, cabs) {
+//         if (err) return next(err);
+//         res.json(cabs);
+//     });
+// }
 
 exports.add_cab = function (req, res, next) {
     Partner.findById(req.params.pID).exec(function (err, partner) {
@@ -64,18 +64,18 @@ exports.add_cab = function (req, res, next) {
     });
 };
 
-exports.cab_detail = function (req, res, next) {
-    Cab.findById(req.params.cID).exec(function (err, result) {
-        if (err) return next(err);
-        if (!result) {
-            err = new Error('Failed to load Cab');
-            err.status = 404;
-            return next(err);
-        }
-        req.cab = result;
-        res.json(req.cab);
-    });
-};
+// exports.cab_detail = function (req, res, next) {
+//     Cab.findById(req.params.cID).exec(function (err, result) {
+//         if (err) return next(err);
+//         if (!result) {
+//             err = new Error('Failed to load Cab');
+//             err.status = 404;
+//             return next(err);
+//         }
+//         req.cab = result;
+//         res.json(req.cab);
+//     });
+// };
 
 exports.cab_check_available = function (req, res, next) {
     Cab.findById(req.params.cID).exec(function (err, cab) {
@@ -135,23 +135,23 @@ exports.cab_update = function (req, res, next) {
     });
 };
 
-exports.cab_delete = function (req, res, next) {
-    Cab.findById(req.params.cID).exec(function (err, cab) {
-        if (err) return next(err);
-        if (!cab) {
-            err = new Error('Failed to load Cab');
-            err.status = 404;
-            return next(err);
-        }
-        if (cab.isAvailable) {
-            Cab.remove({ _id: req.params.cID }, function (err, cab) {
-                if (err) return next(err);
-                res.json(cab);
-            });
-        } else {
-            err = new Error('Cab unavailable now');
-            err.status = 404;
-            return next(err);
-        }
-    })
-}
+// exports.cab_delete = function (req, res, next) {
+//     Cab.findById(req.params.cID).exec(function (err, cab) {
+//         if (err) return next(err);
+//         if (!cab) {
+//             err = new Error('Failed to load Cab');
+//             err.status = 404;
+//             return next(err);
+//         }
+//         if (cab.isAvailable) {
+//             Cab.remove({ _id: req.params.cID }, function (err, cab) {
+//                 if (err) return next(err);
+//                 res.json(cab);
+//             });
+//         } else {
+//             err = new Error('Cab unavailable now');
+//             err.status = 404;
+//             return next(err);
+//         }
+//     })
+// }
