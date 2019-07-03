@@ -3,10 +3,8 @@ const Schema = mongoose.Schema;
 
 const LocationSchema = new Schema({
     city: {type: String, required: true, unique: true },
-    createdAt: {type: Date, default: Date.now },
-    updatedAt: {type: Date, default: Date.now },
-    setA: [{ type: String, unique: true, default: null}],
-    setB: [{ type: String, unique: true, default: null}]
+    setA: [{ type: String, default: null}],
+    setB: [{ type: String, default: null}]
 });
 
 LocationSchema.virtual('url').get(function () {
