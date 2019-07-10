@@ -103,7 +103,7 @@ exports.user_join_ride = function (req, res, next) {
 
                 var trips = user.trips;
                 for (var i = 0; i < trips.length; i++) {
-                    if (trips[i].cab != null && trips[i].cab.carName == null) {
+                    if (trips[i].status == 'Sharing' && trips[i].cab != null && trips[i].cab.carName == null) {
                         proceed = 'false';
                         res.status(401).json({ "message": "Only one ride allowed" });
                     }
