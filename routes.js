@@ -41,7 +41,8 @@ router.get('/api/admin/partners/:pID', partner_controller.partner_detail); //par
 
 
 //router.post('/api/admin/locations', location_controller.add_location); //Routes-authentication and authorisation both required
-router.get('/locations', location_controller.list_location);
+router.get('/locations', location_controller.init_location);
+router.get('/api/locations', location_controller.auth_location);
 //router.get('/api/locations/:lID', location_controller.location_detail);
 //router.put('/api/admin/locations/:lID/addSubLocation', location_controller.add_sub_location); //Add Sub Location
 //router.delete('/api/admin/locations/:lID', location_controller.location_delete); //Routes-authentication and authorisation both required

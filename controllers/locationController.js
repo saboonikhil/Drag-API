@@ -1,6 +1,13 @@
 const Location = require('../models/location').Location;
 
-exports.list_location = function (req, res, next) {
+exports.init_location = function (req, res, next) {
+	Location.find({}).sort({ createdAt: -1 }).exec(function (err, locations) {
+		if (err) return next(err);
+		res.json(locations);
+	});
+};
+
+exports.auth_location = function (req, res, next) {
 	Location.find({}).sort({ createdAt: -1 }).exec(function (err, locations) {
 		if (err) return next(err);
 		res.json(locations);
