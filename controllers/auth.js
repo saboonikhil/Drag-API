@@ -126,7 +126,7 @@ const auth = {
 					if (partners.length != 0)
 						callback({ 'user': partners[0], 'res': true, 'role': 'admin' });
 					else {
-						callback({ 'response': "Email Not Registered", 'res': false });
+						callback(null);
 					}
 				})
 			}
