@@ -5,10 +5,14 @@ const mongoose = require('mongoose');
 const connect = require('connect');
 var https = require('https');
 var fs = require('fs');
-var dragkey = fs.readFileSync('encryption/drag_key.pem');
-var dragcert = fs.readFileSync('encryption/drag_cert.crt')
+//var dragkey = fs.readFileSync('encryption/drag_key.pem');
+//var dragcert = fs.readFileSync('encryption/drag_cert.crt')
 
-var options = { key: dragkey, cert: dragcert };
+const options = {
+  cert: fs.readFileSync('./encryption/fullchain.pem'),
+  key: fs.readFileSync('./encryption/private.pem')
+};
+
 var express = require('express');
 var app = express();
 
