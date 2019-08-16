@@ -2,12 +2,12 @@ const Partner = require('../models/partner').Partner;
 const crypto = require('crypto');
 const rand = require('csprng');
 
-// exports.list_partner = function (req, res, next) {
-//     Partner.find({}).populate('cab').populate('user').sort({ createdAt: -1 }).exec(function (err, partners) {
-//         if (err) return next(err);
-//         res.json(partners);
-//     });
-// };
+exports.list_partner = function (req, res, next) {
+    Partner.find({}).populate('cab').populate('user').sort({ createdAt: -1 }).exec(function (err, partners) {
+        if (err) return next(err);
+        res.json(partners);
+    });
+};
 
 exports.add_partner = function (req, res, next) {
     const partner = new Partner(req.body);
@@ -48,10 +48,25 @@ exports.add_partner = function (req, res, next) {
             res.json({ 'response': "Email not valid", 'res': false });
         }
     }
+    else {
+        res.status(451).json({ "message": "You dragged yourself to a wrong place. Drag again maybe?" });
+    }
 }
 
-exports.partner_detail = function (req, res, next) {
-    Partner.findById(req.params.pID).populate({ path: 'cabs', populate: { path: 'riders' } }).exec(function (err, result) {
+exports.partner_trips = function (req, res, next) {
+    Partner.findById(req.params.pID).populate({ path: 'trips', populate: { path: 'riders._id' } }).exec(function (err, result) {
+        if (err) return next(err);
+        if (!result) {
+            err = new Error('Failed to load partner');
+            err.status = 404;
+            return next(err);
+        }
+        res.json(result.trips);
+    });
+};
+
+exports.partner_update = function (req, res, next) {
+    Partner.findById(req.params.pID).exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load partner');
@@ -59,29 +74,16 @@ exports.partner_detail = function (req, res, next) {
             return next(err);
         }
         req.partner = result;
-        res.json(req.partner);
+        req.partner.update(req.body, function (err, result) {
+            if (err) return next(err);
+            res.json(result);
+        });
     });
 };
 
-// exports.partner_update = function (req, res, next) {
-//     Partner.findById(req.params.pID).exec(function (err, result) {
-//         if (err) return next(err);
-//         if (!result) {
-//             err = new Error('Failed to load partner');
-//             err.status = 404;
-//             return next(err);
-//         }
-//         req.partner = result;
-//         req.partner.update(req.body, function (err, result) {
-//             if (err) return next(err);
-//             res.json(result);
-//         });
-//     });
-// };
-
-// exports.partner_delete = function (req, res, next) {
-//     Partner.remove({ _id: req.params.pID }, function (err, partner) {
-//         if (err) return next(err);
-//         res.json(partner);
-//     });
-// };
+exports.partner_delete = function (req, res, next) {
+    Partner.remove({ _id: req.params.pID }, function (err, partner) {
+        if (err) return next(err);
+        res.json(partner);
+    });
+};

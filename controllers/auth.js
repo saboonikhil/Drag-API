@@ -38,9 +38,7 @@ const auth = {
 				}
 				if (dbPartnerObj) {
 					if (dbPartnerObj.res) {
-						Partner.findById(dbPartnerObj.partner.id).populate({
-							path: 'cabs', populate: { path: 'riders' }
-						}).exec(function (err, partner) {
+						Partner.findById(dbPartnerObj.partner.id).exec(function (err, partner) {
 							if (err) return next(err);
 							res.json({ 'response': "Logged In Successfully", 'res': true, 'token': genToken(partner) });
 						});
@@ -60,9 +58,7 @@ const auth = {
 				}
 				if (dbUserObj) {
 					if (dbUserObj.res) {
-						User.findById(dbUserObj.user.id).populate({
-							path: 'trips', populate: { path: 'cab' }
-						}).exec(function (err, user) {
+						User.findById(dbUserObj.user.id).exec(function (err, user) {
 							if (err) return next(err);
 							res.json({ 'response': "Logged In Successfully", 'res': true, 'token': genToken(user) });
 						});
@@ -126,7 +122,7 @@ const auth = {
 					if (partners.length != 0)
 						callback({ 'user': partners[0], 'res': true, 'role': 'admin' });
 					else {
-						callback(null);
+						callback({ 'response': "Email Not Registered", 'res': false });
 					}
 				})
 			}
