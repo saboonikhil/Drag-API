@@ -9,7 +9,7 @@ const UserSchema = new Schema({
 	contact: { type: String, required: true, unique: true },
 	alternateContact: { type: String, default: null },
 	password: { type: String, required: true },
-	trips: [{ type: Schema.ObjectId, ref: 'Trip', default: null }],
+	trips: [{ type: Schema.ObjectId, ref: 'Cab', default: null }],
 	salt: String,
 	temp_str: String,
 	createdAt: { type: Date, default: Date.now },

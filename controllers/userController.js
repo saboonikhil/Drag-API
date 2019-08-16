@@ -3,13 +3,14 @@ const Notification = require('../models/notification').Notification;
 const Feedback = require('../models/feedback').Feedback;
 const crypto = require('crypto');
 const rand = require('csprng');
+const orderid = require('../config/orderId')('mysecret');
 
-// exports.user_list = function (req, res, next) {
-// 	User.find({}).populate('cab').sort({ createdAt: -1 }).exec(function (err, users) {
-// 		if (err) return next(err);
-// 		res.json({ 'users': users });
-// 	});
-// };
+exports.user_list = function (req, res, next) {
+	User.find({}).populate('cab').sort({ createdAt: -1 }).exec(function (err, users) {
+		if (err) return next(err);
+		res.json({ 'users': users });
+	});
+};
 
 exports.create_user = function (req, res, next) {
 	const user = new User(req.body);
@@ -30,7 +31,7 @@ exports.create_user = function (req, res, next) {
 					user.save(function (err, user) {
 						if (err) return next(err);
 						res.status(201);
-						res.json({ 'response': "Successfully registered! Log in to get started.", 'res': true });
+						res.json({ 'response': "Sucessfully Registered", 'res': true });
 					});
 				}
 				else {
@@ -50,16 +51,15 @@ exports.create_user = function (req, res, next) {
 	}
 };
 
-exports.user_detail = function (req, res, next) {
-	User.findById(req.params.uID).populate({ path: 'trips', populate: { path: 'cab' } }).exec(function (err, result) {
+exports.user_trips = function (req, res, next) {
+	User.findById(req.params.uID).populate('trips').exec(function (err, result) {
 		if (err) return next(err);
 		if (!result) {
 			err = new Error('Failed to load user');
 			err.status = 404;
 			return next(err);
 		}
-		req.user = result;
-		res.json(result);
+		res.json(result.trips);
 	})
 }
 
@@ -126,9 +126,9 @@ exports.send_feedback = function (req, res, next) {
 	});
 };
 
-// exports.user_delete = function (req, res, next) {
-// 	User.remove({ _id: req.params.uID }, function (err, user) {
-// 		if (err) return next(err);
-// 		res.json(user);
-// 	});
-// };
+exports.user_delete = function (req, res, next) {
+	User.remove({ _id: req.params.uID }, function (err, user) {
+		if (err) return next(err);
+		res.json(user);
+	});
+};

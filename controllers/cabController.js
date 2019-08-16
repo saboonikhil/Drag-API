@@ -2,32 +2,31 @@ const Cab = require('../models/cab').Cab;
 const Partner = require('../models/partner').Partner;
 const Transaction = require('../models/transaction').Transaction;
 
-exports.available_cab_list = function (req, res, next) {
-    const startTime = req.query.startTime;
+exports.cab_fare_list = function (req, res, next) {
+    //const startTime = req.query.startTime;
 
-    const startTimeUpperLimit = new Date(startTime);
-    startTimeUpperLimit.setHours(startTimeUpperLimit.getHours() + 12); // Considering that time fluctuation is allowed for +12hours
-    const startTimeISOUpperLimit = startTimeUpperLimit.toISOString();
+    //const startTimeUpperLimit = new Date(startTime);
+    //startTimeUpperLimit.setHours(startTimeUpperLimit.getHours() + 12); // Considering that time fluctuation is allowed for +12hours
+    //const startTimeISOUpperLimit = startTimeUpperLimit.toISOString();
 
-    const startTimeLowerLimit = new Date(startTime);
-    startTimeLowerLimit.setHours(startTimeLowerLimit.getHours() - 12); // Considering that time fluctuation is allowed for -12hours
-    var startTimeISOLowerLimit = startTimeLowerLimit.toISOString();
+    //const startTimeLowerLimit = new Date(startTime);
+    //startTimeLowerLimit.setHours(startTimeLowerLimit.getHours() - 12); // Considering that time fluctuation is allowed for -12hours
+    //var startTimeISOLowerLimit = startTimeLowerLimit.toISOString();
 
-    if ((new Date() - startTimeLowerLimit) > 0) {
-        startTimeISOLowerLimit = new Date(startTime).toISOString();
-    }
+    //if ((new Date() - startTimeLowerLimit) > 0) {
+    //    startTimeISOLowerLimit = new Date(startTime).toISOString();
+    //}
 
     Cab.find({
-        isAvailable: true,
-        tripId: null,
-        city: req.query.city,
+        isAvailable: false,
+        isShared: false,
+        riders: null,
         $and: [
-            { $or: [{ pickup: null }, { pickup: req.query.pickup }] },
-            { $or: [{ drop: null }, { drop: req.query.drop }] },
-            { $or: [{ startTime: { $lte: startTimeISOUpperLimit, $gte: startTimeISOLowerLimit } }, { startTime: null }] }
+            { $or: [{ pickup: req.query.drop }, { pickup: req.query.pickup }] },
+            { $or: [{ drop: req.query.pickup }, { drop: req.query.drop }] },
+            //{ $or: [{ startTime: { $lte: startTimeISOUpperLimit, $gte: startTimeISOLowerLimit } }, { startTime: null }] }
         ],
-        seats: req.query.seats,
-    }).sort({ startTime: 1 }).exec(function (err, cabs) {
+    }).exec(function (err, cabs) {
         if (err) return next(err);
         res.status(200).json(cabs);
     });
@@ -120,7 +119,7 @@ exports.cab_make_available = function (req, res, next) {
 };
 
 exports.cab_update = function (req, res, next) {
-    Cab.findById(req.params.cID).populate('riders').exec(function (err, result) {
+    Cab.findById(req.params.cID).populate('riders._id').exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load Cab');

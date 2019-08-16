@@ -7,6 +7,7 @@ const partner_controller = require('./controllers/partnerController');
 const location_controller = require('./controllers/locationController');
 const payment_controller = require('./controllers/paymentController');
 const ride_controller = require('./controllers/rideController');
+const otp_api_controller = require('./controllers/otpApiController');
 
 
 
@@ -15,7 +16,7 @@ router.post('/signIn', auth.signin); //Routes that can be accessed by anyone
 
 router.post('/signUp', user_controller.create_user); //Routes that can be accessed by anyone
 //router.get('/api/admin/users', user_controller.user_list); //Routes that can be accessed only by authenticated users
-router.get('/api/users/:uID', user_controller.user_detail);
+router.get('/api/users/:uID/trips', user_controller.user_trips);
 router.put('/api/users/:uID', user_controller.user_update);
 router.put('/api/users/:uID/updatePassword', user_controller.update_password);
 router.get('/api/notifications', user_controller.notification_list);
@@ -24,7 +25,7 @@ router.put('/api/users/:uID/sendFeedback', user_controller.send_feedback);
 
 
 router.post('/api/admin/:pID/cabs', cab_controller.add_cab); //Routes-authentication and authorisation both required
-router.get('/api/cabs', cab_controller.available_cab_list); //Route that can be accessed by authenticated users
+router.get('/api/cabs', cab_controller.cab_fare_list); //Route that can be accessed by authenticated users
 router.get('/api/cabs/:cID/checkCab', cab_controller.cab_check_available);
 //router.get('/api/admin/cabs', cab_controller.all_cab_list);
 //router.get('/api/cabs/:cID', cab_controller.cab_detail);
@@ -35,7 +36,7 @@ router.put('/api/admin/cabs/:cID', cab_controller.cab_update);
 
 router.post('/api/admin/signUp', partner_controller.add_partner); //Routes-authentication and authorisation both required - Admin Signup
 //router.get('/api/admin/partners', partner_controller.list_partner); //partner Routes-authentication and authorisation both required
-router.get('/api/admin/partners/:pID', partner_controller.partner_detail); //partner Routes-authentication and authorisation both required
+router.get('/api/admin/partners/:pID/trips', partner_controller.partner_trips); //partner Routes-authentication and authorisation both required
 //router.put('/api/admin/partners/:pID', partner_controller.partner_update);
 //router.delete('/api/admin/partners/:pID', partner_controller.partner_delete); //Routes-authentication and authorisation both required
 
@@ -56,5 +57,8 @@ router.post('/api/rides', ride_controller.add_ride);
 router.get('/api/rides', ride_controller.user_ride_list);
 router.get('/api/admin/rides', ride_controller.partner_ride_list);
 router.put('/api/users/:uID/joinRide', ride_controller.user_join_ride);
+
+router.post('/getOtp', otp_api_controller.getOtp);
+router.post('/verifyOtp', otp_api_controller.verifyOtp);
 
 module.exports = router;

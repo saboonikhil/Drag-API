@@ -1,6 +1,5 @@
 const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
-const Trip = require('../models/trip').Trip;
 const uniqueId = require('../config/tripId')('mysecret');
 
 exports.add_ride = function (req, res, next) {
@@ -126,26 +125,26 @@ exports.user_join_ride = function (req, res, next) {
                     });
                     ride.riders.push(user);
 
-                    var trip = new Trip({
-                        status: "Sharing",
-                        cab: ride._id,
-                        travelDetails: {
-                            tripId: tripId,
-                            pickup: ride.pickup,
-                            drop: ride.drop,
-                            startTime: ride.startTime,
-                            seats: req.body.seats
-                        }
-                    });
-                    trip.save(function (err) {
-                        if (err) return next(err);
-                        Trip.populate(trip, { path: "cab" }, function (err, result) {
-                            if (err) return next(err);
-                            res.status(201).json(result);
-                        });
-                    });
-                    user.trips.push(trip);
-                    user.save(function (err) { if (err) return next(err); });
+                    // var trip = new Trip({
+                    //     status: "Sharing",
+                    //     cab: ride._id,
+                    //     travelDetails: {
+                    //         tripId: tripId,
+                    //         pickup: ride.pickup,
+                    //         drop: ride.drop,
+                    //         startTime: ride.startTime,
+                    //         seats: req.body.seats
+                    //     }
+                    // });
+                    // trip.save(function (err) {
+                    //     if (err) return next(err);
+                    //     Trip.populate(trip, { path: "cab" }, function (err, result) {
+                    //         if (err) return next(err);
+                    //         res.status(201).json(result);
+                    //     });
+                    // });
+                    // user.trips.push(trip);
+                    // user.save(function (err) { if (err) return next(err); });
                 }
             });
         }

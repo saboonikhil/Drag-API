@@ -2,9 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const LocationSchema = new Schema({
-    city: {type: String, required: true, unique: true },
-    setA: [{ type: String, default: null}],
-    setB: [{ type: String, default: null}]
+    city: { type: String, required: true, unique: true }
 });
 
 LocationSchema.virtual('url').get(function () {

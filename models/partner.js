@@ -8,7 +8,7 @@ const PartnerSchema = new Schema({
     alternateContact: { type: String, default: null },
     password: { type: String, required: true },
     drivers: [{ type: Schema.ObjectId, ref: 'User', default: null }],
-    cabs: [{ type: Schema.ObjectId, ref: 'Cab', default: null }],
+    trips: [{ type: Schema.ObjectId, ref: 'Cab', default: null }],
     salt: String,
     temp_str: String,
     createdAt: { type: Date, default: Date.now },
