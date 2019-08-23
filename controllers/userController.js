@@ -3,7 +3,6 @@ const Notification = require('../models/notification').Notification;
 const Feedback = require('../models/feedback').Feedback;
 const crypto = require('crypto');
 const rand = require('csprng');
-const orderid = require('../config/orderId')('mysecret');
 
 exports.user_list = function (req, res, next) {
 	User.find({}).populate('cab').sort({ createdAt: -1 }).exec(function (err, users) {
@@ -31,7 +30,7 @@ exports.create_user = function (req, res, next) {
 					user.save(function (err, user) {
 						if (err) return next(err);
 						res.status(201);
-						res.json({ 'response': "Sucessfully Registered", 'res': true });
+						res.json({ 'response': "Sucessfully Registered. Log in to get started", 'res': true });
 					});
 				}
 				else {
