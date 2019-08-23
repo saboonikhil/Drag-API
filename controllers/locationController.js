@@ -8,10 +8,15 @@ exports.init_location = function (req, res, next) {
 };
 
 exports.auth_location = function (req, res, next) {
-	Location.find({}).sort({ createdAt: -1 }).exec(function (err, locations) {
-		if (err) return next(err);
-		res.json(locations);
-	});
+	if (req.query.responseCode != null && req.query.versionCode < 14) {
+		res.status(403);
+		res.json({ 'response': "Please update the app with the latest version from the store." });
+	} else {
+		Location.find({}).sort({ createdAt: -1 }).exec(function (err, locations) {
+			if (err) return next(err);
+			res.json(locations);
+		});
+	}
 };
 
 // exports.add_location = function (req, res, next) {

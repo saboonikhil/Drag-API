@@ -24,6 +24,14 @@ exports.generate_checksum = function (req, res, next) {
                 return next(err);
             }
 
+            var txnAmount = '';
+            if (req.body.paymentMode == 'Full') {
+                txnAmount = cab.carNumber;
+            }
+            else if (req.body.paymentMode == 'Advance') {
+                txnAmount = (0.2 * parseFloat(cab.carNumber)).toFixed(2).toString();
+            }
+
             const orderId = uniqueId.generateOrderId();
             var paramarray = {};
 
@@ -34,7 +42,7 @@ exports.generate_checksum = function (req, res, next) {
             paramarray['EMAIL'] = user.email;
             paramarray['INDUSTRY_TYPE_ID'] = paytm_config.INDUSTRY_TYPE_ID; //Provided by Paytm
             paramarray['CHANNEL_ID'] = paytm_config.CHANNEL_ID; //Provided by Paytm
-            paramarray['TXN_AMOUNT'] = cab.carNumber; // transaction amount
+            paramarray['TXN_AMOUNT'] = txnAmount; // transaction amount
             paramarray['WEBSITE'] = paytm_config.WEBSITE; //Provided by Paytm
             paramarray['CALLBACK_URL'] = 'https://securegw.paytm.in/theia/paytmCallback';//Provided by Paytm
             paytm_checksum.genchecksum(paramarray, paytm_config.MERCHANT_KEY, function (err, checksum) {
@@ -113,7 +121,12 @@ exports.create_trip = function (req, res, next) {
 
                             var status = '';
                             if (response.STATUS == "TXN_SUCCESS") {
-                                status = 'Payment Successful';
+                                if (response.TXNAMOUNT == parseFloat(cab.carNumber).toFixed(2).toString()) {
+                                    status = 'Payment Successful';
+                                }
+                                else {
+                                    status = 'Trip Confirmed';
+                                }
                             } else if (response.STATUS == "TXN_FAILURE") {
                                 status = 'Payment Failed';
                             } else if (response.STATUS == "PENDING") {
@@ -125,6 +138,7 @@ exports.create_trip = function (req, res, next) {
                                 pickup: req.body.pickup,
                                 drop: req.body.drop,
                                 startTime: req.body.startTime,
+                                fare: parseFloat(cab.carNumber).toFixed(2).toString(),
                                 riders: [{
                                     _id: user._id,
                                     tripId: req.body.orderId,
@@ -132,7 +146,7 @@ exports.create_trip = function (req, res, next) {
                                     pickup: req.body.pickup,
                                     drop: req.body.drop,
                                     seats: seatsBooked,
-                                    fare: cab.carNumber,
+                                    fare: response.TXNAMOUNT,
                                     luggageCount: cab.driverContact,
                                     rawData: response
                                 }],
