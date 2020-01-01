@@ -2,27 +2,25 @@
 
 var crypto = require('crypto');
 var util = require('util');
-
-
+const winston = require('../../config/winston');
 
 var crypt = {
   iv: '@@@@&&&&####$$$$',
 
-  encrypt: function (data,custom_key) {
+  encrypt: function (data, custom_key) {
     var iv = this.iv;
     var key = custom_key;
     var algo = '256';
     switch (key.length) {
-    case 16:
-      algo = '128';
-      break;
-    case 24:
-      algo = '192';
-      break;
-    case 32:
-      algo = '256';
-      break;
-
+      case 16:
+        algo = '128';
+        break;
+      case 24:
+        algo = '192';
+        break;
+      case 32:
+        algo = '256';
+        break;
     }
     var cipher = crypto.createCipheriv('AES-' + algo + '-CBC', key, iv);
     //var cipher = crypto.createCipher('aes256',key);
@@ -31,20 +29,20 @@ var crypt = {
     return encrypted;
   },
 
-  decrypt: function (data,custom_key) {
+  decrypt: function (data, custom_key) {
     var iv = this.iv;
     var key = custom_key;
     var algo = '256';
     switch (key.length) {
-    case 16:
-      algo = '128';
-      break;
-    case 24:
-      algo = '192';
-      break;
-    case 32:
-      algo = '256';
-      break;
+      case 16:
+        algo = '128';
+        break;
+      case 24:
+        algo = '192';
+        break;
+      case 32:
+        algo = '256';
+        break;
     }
     var decipher = crypto.createDecipheriv('AES-' + algo + '-CBC', key, iv);
     var decrypted = decipher.update(data, 'base64', 'binary');
@@ -83,14 +81,14 @@ module.exports = crypt;
 
   function logsalt(err, salt) {
     if (!err) {
-      console.log('salt is ' + salt);
+      winston.info('salt is ' + salt);
     }
   }
 
   if (require.main === module) {
     var enc = crypt.encrypt('One97');
-    console.log('encrypted - ' + enc);
-    console.log('decrypted - ' + crypt.decrypt(enc));
+    winston.info('encrypted - ' + enc);
+    winston.info('decrypted - ' + crypt.decrypt(enc));
 
     for (i = 0; i < 5; i++) {
       crypt.gen_salt(4, logsalt);
