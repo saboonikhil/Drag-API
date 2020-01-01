@@ -54,7 +54,10 @@ exports.add_partner = function (req, res, next) {
 }
 
 exports.partner_trips = function (req, res, next) {
-    Partner.findById(req.params.pID).populate({ path: 'trips', populate: { path: 'riders._id' } }).exec(function (err, result) {
+    Partner.findById(req.params.pID).populate({
+        path: 'trips', populate: { path: 'riders._id' },
+        options: { sort: { 'startTime': -1 }, limit: 4, skip: parseInt(req.query.skip) }
+    }).exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load partner');
