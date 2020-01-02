@@ -7,6 +7,7 @@ const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
 const Partner = require('../models/partner').Partner;
 const uniqueId = require('../config/orderId')('mysecret');
+const winston = require('../config/winston');
 
 exports.generate_checksum = function (req, res, next) {
     User.findById(req.params.uID).exec(function (err, user) {
@@ -84,9 +85,9 @@ exports.create_trip = function (req, res, next) {
                 return next(err);
             }
 
-            User.findById(req.params.uID).exec(function (err, user) {
+            User.findById(req.params.uID).exec(function (err, rider) {
                 if (err) return next(err);
-                if (!user) {
+                if (!rider) {
                     err = new Error('Failed to load User');
                     err.status = 404;
                     return next(err);
@@ -140,7 +141,7 @@ exports.create_trip = function (req, res, next) {
                                 startTime: req.body.startTime,
                                 fare: parseFloat(cab.carNumber).toFixed(2).toString(),
                                 riders: [{
-                                    _id: user._id,
+                                    _id: rider._id,
                                     tripId: req.body.orderId,
                                     tripStatus: status,
                                     pickup: req.body.pickup,
@@ -160,27 +161,51 @@ exports.create_trip = function (req, res, next) {
                                 partner.trips.push(trip);
                                 partner.save(function (err) { if (err) return next(err); });
 
-                                var form_data = {
-                                    From: 'DRAGPT',
-                                    To: partner.contact.substring(4),
-                                    TemplateName: 'partnerNewTrip1',
-                                    VAR1: req.body.orderId,
-                                    VAR2: req.body.pickup,
-                                    VAR3: req.body.drop,
-                                    VAR4: dateFormat(new Date(req.body.startTime), "hh:MM TT"),
-                                    VAR5: dateFormat(new Date(req.body.startTime), "dd-mmm-yyyy")
+                                var rider_sms_data = {
+                                    From: 'DRAGRT',
+                                    To: rider.contact.substring(4),
+                                    VAR1: rider.name,
+                                    VAR2: req.body.orderId,
+                                    VAR3: req.body.pickup,
+                                    VAR4: req.body.drop,
+                                    VAR5: dateFormat(new Date(req.body.startTime), "h:MM TT"),
+                                    VAR6: dateFormat(new Date(req.body.startTime), "mmm d")
                                 };
-                                request.post({
-                                    url: 'http://2factor.in/API/V1/7639c0f0-b4c6-11e9-ade6-0200cd936042/ADDON_SERVICES/SEND/TSMS',
-                                    formData: form_data
-                                }, function (err, result) {
-                                    if (err) { return console.error('Transaction Message Upload Error: ', err); }
-                                    console.log('Transaction message sent to ', partner.contact.substring(4));
+
+                                message = `Hi ${rider_sms_data['VAR1']}!\n\nYour ride is booked (Trip ID:${rider_sms_data['VAR2']})` +
+                                    ` from ${rider_sms_data['VAR3']} to ${rider_sms_data['VAR4']} starting at ${rider_sms_data['VAR5']}` +
+                                    ` on ${rider_sms_data['VAR6']}.\n\nNote: Your ride fare doesn't include parking charges if any.` +
+                                    ` Driver and cab details will be shared 2 hrs before the pickup time.\n\nCherish the Journey,\nTeam Drag`
+
+                                var options = {
+                                    method: 'POST',
+                                    url: 'http://msg.bulksmsblaze.com/rest/services/sendSMS/sendGroupSms',
+                                    qs: { AUTH_KEY: '92b98317846c1623b384e7888405e69' },
+                                    headers:
+                                    {
+                                        'Cache-Control': 'no-cache',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body:
+                                    {
+                                        smsContent: message,
+                                        routeId: '1',
+                                        mobileNumbers: rider_sms_data['To'],
+                                        senderId: rider_sms_data['From'],
+                                        signature: 'signature',
+                                        smsContentType: 'english'
+                                    },
+                                    json: true
+                                };
+                                request(options, function (error, response, body) {
+                                    if (error) throw new Error(error);
+                                    winston.info(`Message sent to ${rider_sms_data['To']}` +
+                                        ` with responseCode: ${body['responseCode']}, response: ${body['response']}.`);
                                 });
                             }
 
-                            user.trips.push(trip);
-                            user.save(function (err) { if (err) return next(err); });
+                            rider.trips.push(trip);
+                            rider.save(function (err) { if (err) return next(err); });
                             res.status(201).json(trip);
                         });
                     });
