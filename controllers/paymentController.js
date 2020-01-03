@@ -164,7 +164,7 @@ exports.create_trip = function (req, res, next) {
                                 var rider_sms_data = {
                                     From: 'DRAGRT',
                                     To: rider.contact.substring(4),
-                                    VAR1: rider.name,
+                                    VAR1: rider.name.split(' ')[0],
                                     VAR2: req.body.orderId,
                                     VAR3: req.body.pickup,
                                     VAR4: req.body.drop,
@@ -172,7 +172,7 @@ exports.create_trip = function (req, res, next) {
                                     VAR6: dateFormat(new Date(req.body.startTime), "mmm d")
                                 };
 
-                                message = `Hi ${rider_sms_data['VAR1']}!\n\nYour ride is booked (Trip ID:${rider_sms_data['VAR2']})` +
+                                message = `Hi ${rider_sms_data['VAR1']}!\n\nYour ride is booked (Trip ID: ${rider_sms_data['VAR2']})` +
                                     ` from ${rider_sms_data['VAR3']} to ${rider_sms_data['VAR4']} starting at ${rider_sms_data['VAR5']}` +
                                     ` on ${rider_sms_data['VAR6']}.\n\nNote: Your ride fare doesn't include parking charges if any.` +
                                     ` Driver and cab details will be shared 2 hrs before the pickup time.\n\nCherish the Journey,\nTeam Drag`
