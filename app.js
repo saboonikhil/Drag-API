@@ -1,9 +1,10 @@
 const jsonParser = require('body-parser').json;
-const routes = require('./routes');
 const winston = require('./config/winston');
-const logger = require('morgan');
 const mongoose = require('mongoose');
+const routes = require('./routes');
 const connect = require('connect');
+const logger = require('morgan');
+const helmet = require('helmet');
 var https = require('https');
 var fs = require('fs');
 
@@ -41,6 +42,7 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use(helmet());
 app.use(logger(':remote-addr - :method :url - :status - HTTP/:http-version - :user-agent - :response-time ms', { stream: winston.stream }));
 app.use(jsonParser());
 app.use(connect.urlencoded());
