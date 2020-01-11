@@ -4,34 +4,21 @@ const Transaction = require('../models/transaction').Transaction;
 
 exports.cab_fare_list = function (req, res, next) {
     const startTime = req.query.startTime;
-    if (new Date(startTime).getDate() > 1 && new Date(startTime).getDate() < 8) {
-        if (new Date(startTime).getHours() > 22 || new Date(startTime).getHours() < 7) {
-            Cab.find({
-                isAvailable: true,
-                isShared: false,
-                riders: null,
-                pickup: req.query.pickup,
-                drop: req.query.drop
-            }).exec(function (err, cabs) {
-                if (err) return next(err);
-                res.status(200).json(cabs);
-            });
-        } else {
-            Cab.find({
-                isAvailable: false,
-                isShared: false,
-                riders: null,
-                pickup: req.query.pickup,
-                drop: req.query.drop
-            }).exec(function (err, cabs) {
-                if (err) return next(err);
-                res.status(200).json(cabs);
-            });
-        }
+    if (new Date(startTime).getHours() > 22 || new Date(startTime).getHours() < 7) {
+        Cab.find({
+            isAvailable: true,
+            isShared: false,
+            riders: null,
+            pickup: req.query.pickup,
+            drop: req.query.drop
+        }).exec(function (err, cabs) {
+            if (err) return next(err);
+            res.status(200).json(cabs);
+        });
     } else {
         Cab.find({
             isAvailable: false,
-            isShared: true,
+            isShared: false,
             riders: null,
             pickup: req.query.pickup,
             drop: req.query.drop
