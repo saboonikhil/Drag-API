@@ -9,6 +9,16 @@ exports.list_partner = function (req, res, next) {
     });
 };
 
+/*
+    add_partner() used by route: /api/admin/signUp
+    add_partner function creats a new Partner and is used for Partner signUp from frontend.
+    Parameters:
+        email: partner email
+        password: Password provided by partner
+    Response:
+        201: Successful creation of Partner object
+        401: Respective errors
+*/
 exports.add_partner = function (req, res, next) {
     const partner = new Partner(req.body);
     const email = partner.email;
@@ -53,10 +63,18 @@ exports.add_partner = function (req, res, next) {
     }
 }
 
+/*
+	partner_trips populates the trips completed by a partner with specific pID and returns the latest 5 trips with the required skip value.
+	Parameters:
+		pID: unique ID of the partner from the partner object
+		skip: number of values to skip while populating trips
+	End point response:
+		result.trips: latest 6 trips after skipping the few required trips depending on the skip parameter
+*/
 exports.partner_trips = function (req, res, next) {
     Partner.findById(req.params.pID).populate({
-        path: 'trips', populate: { path: 'riders._id' },
-        options: { sort: { 'startTime': -1 }, limit: 4, skip: parseInt(req.query.skip) }
+        path: 'trips', populate: { path: 'riders.id' },
+        options: { sort: { 'startTime': -1 }, limit: 6, skip: parseInt(req.query.skip) }
     }).exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
@@ -68,6 +86,16 @@ exports.partner_trips = function (req, res, next) {
     });
 };
 
+/*
+	partner_update() used by route: /api/admin/partners/:pID
+	partner_update function updates specific values that needs to be changed and provided by partner
+	Parameters:
+		pID: partner's unique ID
+		other partner parameters in request body
+	Response:
+		404: When partner not found
+		result: response recieved from update function of mongoose
+*/
 exports.partner_update = function (req, res, next) {
     Partner.findById(req.params.pID).exec(function (err, result) {
         if (err) return next(err);

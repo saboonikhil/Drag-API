@@ -1,8 +1,21 @@
 const Cab = require('../models/cab').Cab;
 const Partner = require('../models/partner').Partner;
 const Transaction = require('../models/transaction').Transaction;
+const winston = require('../config/winston');
 
 exports.cab_fare_list = function (req, res, next) {
+    //const startTimeUpperLimit = new Date(startTime);
+    //startTimeUpperLimit.setHours(startTimeUpperLimit.getHours() + 12); // Considering that time fluctuation is allowed for +12hours
+    //const startTimeISOUpperLimit = startTimeUpperLimit.toISOString();
+
+    //const startTimeLowerLimit = new Date(startTime);
+    //startTimeLowerLimit.setHours(startTimeLowerLimit.getHours() - 12); // Considering that time fluctuation is allowed for -12hours
+    //var startTimeISOLowerLimit = startTimeLowerLimit.toISOString();
+
+    //if ((new Date() - startTimeLowerLimit) > 0) {
+    //    startTimeISOLowerLimit = new Date(startTime).toISOString();
+    //}
+
     const startTime = req.query.startTime;
     if (new Date(startTime).getHours() > 22 || new Date(startTime).getHours() < 7) {
         Cab.find({
@@ -95,7 +108,7 @@ exports.cab_make_available = function (req, res, next) {
         if (txns.length == 1)
             Transaction.remove({ _id: txns[0]._id }, function (err) {
                 if (err)
-                    console.log('Error while removing transaction: ' + err);
+                    winston.error('Error while removing transaction: ' + err);
             });
     });
 
@@ -116,7 +129,7 @@ exports.cab_make_available = function (req, res, next) {
 };
 
 exports.cab_update = function (req, res, next) {
-    Cab.findById(req.params.cID).populate('riders._id').exec(function (err, result) {
+    Cab.findById(req.params.cID).populate('riders.id').exec(function (err, result) {
         if (err) return next(err);
         if (!result) {
             err = new Error('Failed to load Cab');

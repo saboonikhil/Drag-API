@@ -11,7 +11,7 @@ const CabSchema = new Schema({
 	endTime: { type: Date, default: null },
 	fare: { type: String, default: null },
 	riders: [{
-		_id: { type: Schema.ObjectId, ref: 'User', default: null },
+		id: { type: Schema.ObjectId, ref: 'User', default: null },
 		tripId: { type: String, default: null },
 		tripStatus: { type: String, default: null },
 		pickup: { type: String, default: null },

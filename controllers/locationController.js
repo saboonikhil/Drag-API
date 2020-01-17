@@ -8,7 +8,7 @@ exports.init_location = function (req, res, next) {
 };
 
 exports.auth_location = function (req, res, next) {
-	if (req.query.responseCode != null && req.query.versionCode < 14) {
+	if (req.query.userVC < 14 || req.query.partnerVC < 6) {
 		res.status(403);
 		res.json({ 'response': "Please update the app with the latest version from the store." });
 	} else {

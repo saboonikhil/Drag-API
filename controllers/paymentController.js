@@ -141,7 +141,7 @@ exports.create_trip = function (req, res, next) {
                                 startTime: req.body.startTime,
                                 fare: parseFloat(cab.carNumber).toFixed(2).toString(),
                                 riders: [{
-                                    _id: rider._id,
+                                    id: rider._id,
                                     tripId: req.body.orderId,
                                     tripStatus: status,
                                     pickup: req.body.pickup,
