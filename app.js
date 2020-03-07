@@ -1,32 +1,35 @@
+const validateRequest = require('./middlewares/validateRequest');
 const jsonParser = require('body-parser').json;
 const winston = require('./config/winston');
 const mongoose = require('mongoose');
 const routes = require('./routes');
 const connect = require('connect');
+const express = require('express');
 const logger = require('morgan');
 const helmet = require('helmet');
 var https = require('https');
 var fs = require('fs');
+
+var app = express();
+app.use(helmet());
 
 const options = {
   cert: fs.readFileSync('./middlewares/fullchain.pem'),
   key: fs.readFileSync('./middlewares/private.pem')
 };
 
-var express = require('express');
-var app = express();
-
 var httpsServer = https.createServer(options, app);
 
-mongoose.connect('mongodb+srv://drag_api:aTL4E9jasQWAwCc3@dragcluster-qgxyv.mongodb.net/Drag');
+//{ useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true } removes dependency on deprecated functions
+mongoose.connect('mongodb+srv://drag_api:aTL4E9jasQWAwCc3@dragcluster-qgxyv.mongodb.net/Drag', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
 db.on('error', err => {
-  winston.error('Error while connecting to DB: ${err.message}');
+  winston.error(`While connecting to DB: ${err.message}`);
 });
 db.once('open', () => {
-  winston.info('DB connected successfully!');
+  winston.info(`DB connected successfully!`);
 });
 
 app.use(function (req, res, next) {
@@ -42,12 +45,15 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(helmet());
-app.use(logger(':remote-addr - :method :url - :status - HTTP/:http-version - :user-agent - :response-time ms', { stream: winston.stream }));
+// Custom token for logger to log request body
+logger.token('body', function (req) {
+  return JSON.stringify(req.body);
+});
+app.use(logger(':remote-addr | :method :url - :status | :user-agent | :response-time ms | :body', { stream: winston.stream }));
 app.use(jsonParser());
 app.use(connect.urlencoded());
 //Auth Middleware-checks if the token is valid
-app.all('/api/*', [require('./middlewares/validateRequest')]);
+app.all('/api/*', [validateRequest]);
 app.use('/', routes);
 
 app.use(function (req, res, next) {
@@ -58,7 +64,7 @@ app.use(function (req, res, next) {
 
 app.use(function (err, req, res, next) {
   res.status(err.status || 500);
-  winston.error(` ${req.ip} - ${req.method} ${req.originalUrl} - ${err.status || 500} - ${err.message}`);
+  winston.error(`${req.ip} | ${req.method} ${req.originalUrl} - ${err.status || 500} | ${err.message}`);
   res.json({
     error: {
       message: err.message
@@ -67,5 +73,5 @@ app.use(function (err, req, res, next) {
 });
 
 httpsServer.listen(8443, () => {
-  winston.info(`Web server listening on: ${8443}`);
+  winston.info(`Web server listening on 8443!`);
 });
