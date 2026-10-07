@@ -1,3 +1,7 @@
-module.exports = function(){
-	return 'CHANGE_ME_JWT_SECRET';
+module.exports = function () {
+	const secret = process.env.JWT_SECRET;
+	if (!secret) {
+		throw new Error('JWT_SECRET is required');
+	}
+	return secret;
 }

@@ -39,9 +39,20 @@ npm install
 
 ## Configuration
 
-1. **MongoDB** — Prefer `process.env.MONGODB_URI` (or similar) in `app.js` instead of a hardcoded URI.
-2. **HTTPS** — Supply cert/key paths, or terminate TLS at a reverse proxy and use HTTP internally.
-3. **Port** — Default in code is **8443**.
+Copy [`.env.example`](.env.example) and set real values in your environment (or a local `.env` via your process manager — `.env` is gitignored).
+
+| Variable | Purpose |
+|----------|---------|
+| `MONGODB_URI` | MongoDB connection string (**required**) |
+| `JWT_SECRET` | JWT signing secret (**required**) |
+| `TLS_CERT_PATH` / `TLS_KEY_PATH` | HTTPS cert/key paths (defaults under `middlewares/`; keep real `*.pem` out of git) |
+| `PORT` | Listen port (default **8443**) |
+| `PAYTM_MID` / `PAYTM_MERCHANT_KEY` | Paytm merchant credentials |
+| `TWO_FACTOR_API_KEY` | 2factor.in OTP API key |
+| `BULKSMS_AUTH_KEY` | BulkSMS Blaze auth key |
+| `ORDER_ID_SCRAMBLER` / `TRIP_ID_SCRAMBLER` | Format-preserving ID scramblers |
+
+Rotate any credentials that were ever committed historically; treat them as burned.
 
 ## Run
 

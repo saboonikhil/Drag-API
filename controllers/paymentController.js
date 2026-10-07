@@ -6,7 +6,7 @@ const paytm_checksum = require('../config/paytm/checksum');
 const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
 const Partner = require('../models/partner').Partner;
-const uniqueId = require('../config/orderId')('mysecret');
+const uniqueId = require('../config/orderId')(process.env.ORDER_ID_SCRAMBLER || 'change-me');
 const winston = require('../config/winston');
 
 exports.generate_checksum = function (req, res, next) {
@@ -180,7 +180,7 @@ exports.create_trip = function (req, res, next) {
                                 var options = {
                                     method: 'POST',
                                     url: 'http://msg.bulksmsblaze.com/rest/services/sendSMS/sendGroupSms',
-                                    qs: { AUTH_KEY: 'YOUR_BULKSMS_AUTH_KEY' },
+                                    qs: { AUTH_KEY: process.env.BULKSMS_AUTH_KEY || '' },
                                     headers:
                                     {
                                         'Cache-Control': 'no-cache',

@@ -13,15 +13,23 @@ var fs = require('fs');
 var app = express();
 app.use(helmet());
 
+const tlsCertPath = process.env.TLS_CERT_PATH || './middlewares/fullchain.pem';
+const tlsKeyPath = process.env.TLS_KEY_PATH || './middlewares/private.pem';
 const options = {
-  cert: fs.readFileSync('./middlewares/fullchain.pem'),
-  key: fs.readFileSync('./middlewares/private.pem')
+  cert: fs.readFileSync(tlsCertPath),
+  key: fs.readFileSync(tlsKeyPath)
 };
 
 var httpsServer = https.createServer(options, app);
 
+const mongoUri = process.env.MONGODB_URI;
+if (!mongoUri) {
+  winston.error('MONGODB_URI is required (set it in the environment or a local .env loader)');
+  process.exit(1);
+}
+
 //{ useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true } removes dependency on deprecated functions
-mongoose.connect('mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/Drag', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
+mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
@@ -72,6 +80,7 @@ app.use(function (err, req, res, next) {
   });
 });
 
-httpsServer.listen(8443, () => {
-  winston.info(`Web server listening on 8443!`);
+const port = Number(process.env.PORT) || 8443;
+httpsServer.listen(port, () => {
+  winston.info(`Web server listening on ${port}!`);
 });

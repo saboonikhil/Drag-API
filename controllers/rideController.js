@@ -1,6 +1,6 @@
 const Cab = require('../models/cab').Cab;
 const User = require('../models/user').User;
-const uniqueId = require('../config/tripId')('mysecret');
+const uniqueId = require('../config/tripId')(process.env.TRIP_ID_SCRAMBLER || 'change-me');
 
 exports.add_ride = function (req, res, next) {
     if (req.query.x_key == "admin@comingsoon.com") {
