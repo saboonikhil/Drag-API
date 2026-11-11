@@ -93,6 +93,14 @@ ESLint (Airbnb config). Example:
 npx eslint .
 ```
 
+## Related
+
+| Repo | Role |
+|---|---|
+| **Drag-API** | This Express + MongoDB API |
+| [Drag-User](https://github.com/saboonikhil/Drag-User) | Android rider app (book, track, Paytm) |
+| [Drag-Partner](https://github.com/saboonikhil/Drag-Partner) | Android partner / admin app (trips, fleet, connections) |
+
 ## License
 
 See [LICENSE](LICENSE) in this repository.
